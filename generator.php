@@ -225,7 +225,7 @@ ob_end_clean();
 include_once './artikel.html'
 */
 
-if (isset($_GET['genalljson_pass'])) { //Wird später als Funktion umgeschreiben, die die ganzen Beiträge auf veränderung prüft, last_update, upvote_count, downvote_count.
+/*if (isset($_GET['genalljson_pass'])) { //Wird später als Funktion umgeschreiben, die die ganzen Beiträge auf veränderung prüft, last_update, upvote_count, downvote_count.
   $jsond = open_api_getPostsByAuthor();
   for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
     $permlink = read_api($i,"permlink");
@@ -250,5 +250,5 @@ if (isset($_GET['genalljson_pass'])) { //Wird später als Funktion umgeschreiben
     $data['last_update'] = $jsond_getPost["result"]["last_update"];
     file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data));
   }
-}
+}*/
 ?>
