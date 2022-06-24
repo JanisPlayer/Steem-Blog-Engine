@@ -74,17 +74,17 @@
         //console.log(err, para.innerText = result["body"]);
         if (JSON.parse(result["json_metadata"]).image != null && JSON.parse(result["json_metadata"]).image[0] != undefined) {
           img.src = JSON.parse(result["json_metadata"]).image[0];
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/generator.php?artikel=" + permlink;
+          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + permlink;
           //img.style = "max-width:100%; height:auto; display: inline-block; vertical-align: middle;";
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         } else {
           img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/generator.php?artikel=" + permlink;
+          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + permlink;
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         }
         //img.innerHTML = img.innerHTML + "<br>";
         title.innerText = result["title"];
-        title.href = "https://heldendesbildschirms.de/artikel/generator.php?artikel=" + permlink;
+        title.href = "https://heldendesbildschirms.de/artikel/?artikel=" + permlink;
         //title.innerHTML = title.innerHTML + "<br>";
         date.innerText = result["created"];
         button.innerText = "Beitrag lesen (Schnellansicht)"
@@ -256,17 +256,17 @@
 
         if (JSON.parse(rows[i][cols.json_metadata]).image != null && JSON.parse(rows[i][cols.json_metadata]).image[0] != undefined) {
           img.src = JSON.parse(rows[i][cols.json_metadata]).image[0];
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/generator.php?artikel=" + rows[i][cols.permlink];
+          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + rows[i][cols.permlink];
           img.style = "max-width:100%; height:auto; display: inline-block; vertical-align: middle;";
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         } else {
           img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/generator.php?artikel=" + rows[i][cols.permlink];
+          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + rows[i][cols.permlink];
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         }
         title.innerText = rows[i][cols.title];
-        title.href = "https://heldendesbildschirms.de/artikel/generator.php?artikel=" + rows[i][cols.permlink];
-        date.innerText = Date(rows[i][cols.created]);
+        title.href = "https://heldendesbildschirms.de/artikel/?artikel=" + rows[i][cols.permlink];
+        date.innerText = new Date(rows[i][cols.created] * 1000);
         button.innerText = "Beitrag lesen (Schnellansicht)"
         button.onclick = function() {
           //createArtikelContent(rows[i][cols.author], rows[i][cols.permlink]);
@@ -368,14 +368,16 @@
   <!-- End Google Tag Manager -->
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5350651163680266" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+
   <div class="head">
     <img src="/img/logo.png" alt="Logo von @Zauberah erstellt." style="width:64px;height:51px;">
     <a href="/">Helden des Bildschirms</a>
   </div>
 
-</head>
-
-<body>
   <content_box>
 
     <div class="content_read" id ="content_read" >
@@ -400,8 +402,8 @@
     <ul>
       <!-- <li>&copy; 2019 Helden des Bildschirms</li> -->
       <li><a href="mailto:heldendesbildschirms@gmail.com">Kontakt</a></li>
-      <li><a href="datenschutz.html">Datenschutz</a></li>
-      <li><a href="impressum.html">Impressum</a></li>
+      <li><a href="/datenschutz.html">Datenschutz</a></li>
+      <li><a href="/impressum.html">Impressum</a></li>
     </ul>
   </text>
 </footer>
