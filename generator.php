@@ -200,17 +200,11 @@ $pathtsite = '/var/www/html/artikel/';
 
 $permlink = "";
 
-if (isset($_GET['artikel'])) {
+/*if (isset($_GET['artikel'])) {
   gen_site($_GET['artikel'],true);
-}
-if (isset($_POST['genallcontent'])) { //Wird per Javascript aufgerufen.
-  $jsond = open_api_getPostsByAuthor();
-  for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
-    gen_site(read_api($i,"permlink"), false);
-  }
-}
+}*/
 
-/* für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
+//Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 ob_start();
 if (isset($_GET['artikel'])) {
   gen_site($_GET['artikel'],true);
@@ -222,10 +216,16 @@ if (isset($_GET['artikel'])) {
 }
 ob_end_clean();
 
-include_once './artikel.html'
-*/
+include_once './artikel.html';
 
-/*if (isset($_GET['genalljson_pass'])) { //Wird später als Funktion umgeschreiben, die die ganzen Beiträge auf veränderung prüft, last_update, upvote_count, downvote_count.
+/*if (iset($_POST['genallcontent'])) { //Wird per Javascript aufgerufen.
+  $jsond = open_api_getPostsByAuthor();
+  for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
+    gen_site(read_api($i,"permlink"), false);
+  }
+}
+
+if (isset($_GET['genalljson_pass1234'])) { //Wird später als Funktion umgeschreiben, die die ganzen Beiträge auf veränderung prüft, last_update, upvote_count, downvote_count.
   $jsond = open_api_getPostsByAuthor();
   for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
     $permlink = read_api($i,"permlink");
