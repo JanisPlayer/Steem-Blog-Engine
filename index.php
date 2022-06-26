@@ -86,7 +86,8 @@ return $jsond["result"]["rows"][$i][$jsond["result"]["cols"][$cols]];
 
 //Wurde dieser Beitrag schon erstellt?
 function exist_site(string $artikel) {
-  $files = scandir("/var/www/html/artikel/", 1);
+  global $pathtsite;
+  $files = scandir($pathtsite, 1);
   foreach ($files as $key => $value) {
   if (!strstr($value, '.')) {
       if ($artikel == $value) {
@@ -194,9 +195,9 @@ $data =[
     'getPost' => ''
 ];
 
-$pathtemplate = '/var/www/html/artikel/templates/';
-$pathtemplatename = 'artikel.php';
-$pathtsite = '/var/www/html/artikel/';
+$pathtemplate = './templates/';
+$pathtemplatename = './artikel.php';
+$pathtsite = './';
 
 $permlink = "";
 
