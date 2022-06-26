@@ -71,47 +71,28 @@
 
       const artikel = document.createElement("artikel");
       steem.api.getContent(author, permlink, function(err, result) {
-        //console.log(err, para.innerText = result["body"]);
         if (JSON.parse(result["json_metadata"]).image != null && JSON.parse(result["json_metadata"]).image[0] != undefined) {
           img.src = JSON.parse(result["json_metadata"]).image[0];
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + permlink;
-          //img.style = "max-width:100%; height:auto; display: inline-block; vertical-align: middle;";
+          imgcontainera.href = "?artikel=" + permlink;
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         } else {
-          img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + permlink;
+          img.src = "/img/Janis_Pickel_Bild.jpg"
+          imgcontainera.href = "?artikel=" + permlink;
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         }
-        //img.innerHTML = img.innerHTML + "<br>";
         title.innerText = result["title"];
-        title.href = "https://heldendesbildschirms.de/artikel/?artikel=" + permlink;
-        //title.innerHTML = title.innerHTML + "<br>";
+        title.href = "?artikel=" + permlink;
         date.innerText = result["created"];
         button.innerText = "Beitrag lesen (Schnellansicht)"
         button.onclick = function() {
           createArtikelContent(author, permlink);
           location.href="#content_read";
         };
-        //date.innerHTML = date.innerHTML + "<br>";
-        //var img = '<img src="' + JSON.parse(result["json_metadata"]).image + '" alt="' + result["title"] + '" style="width:80%;height:auto;">';
-
-        /*content_box.appendChild(artikel);
-        imgcontainer.style= "max-width:100%; height:200px; overflow: hidden; display: inline-block; position: relative;";
-        artikel.appendChild(imgcontainer);
-
-        if (JSON.parse(result["json_metadata"]).image[0] != null) {
-              imgcontainer.appendChild(img);
-              imgcontainer.appendChild(br);
-        }
-        artikel.appendChild(title);
-        artikel.appendChild(date);*/
-
       });
       content_box.appendChild(artikel);
       artikel.appendChild(imgcontainera);
       imgcontainer.style = "width:100%; height:180px; overflow: hidden; display: inline-block; position: relative;";
       imgcontainera.appendChild(imgcontainer);
-      //picture.style = "top: 50%; transform: translateX(-50%); width: 100%!important;";
       imgcontainer.appendChild(picture);
       if (img.src != null) {
         picture.appendChild(img);
@@ -141,48 +122,21 @@
 
       const artikel = document.createElement("artikel");
       steem.api.getContent(author, permlink, function(err, result) {
-        //console.log(err, para.innerText = result["body"]);
         if (JSON.parse(result["json_metadata"]).image != null && JSON.parse(result["json_metadata"]).image[0] != undefined) {
           img.src = JSON.parse(result["json_metadata"]).image[0];
-          //img.style = "max-width:100%; height:auto; display: inline-block; vertical-align: middle;";
           img.style = "width: auto; height: 100%; object-fit: cover;";
         } else {
           img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
           img.style = "width: auto; height: 100%; object-fit: cover;";
         }
-        //img.innerHTML = img.innerHTML + "<br>";
         title.innerHTML = "<h1>" + result["title"];
         title.href = "https://steemit.com" + result["url"];
         content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(result["body"])));
-        //content_text.innerText = result["body"];
-        //title.innerHTML = title.innerHTML + "<br>";
         date.innerText = result["created"];
-        button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."
-        button.setAttribute = "ArtikelVote(" + author + "," + permlink + ")"
-        //date.innerHTML = date.innerHTML + "<br>";
-        //var img = '<img src="' + JSON.parse(result["json_metadata"]).image + '" alt="' + result["title"] + '" style="width:80%;height:auto;">';
-
-        /*content_box.appendChild(artikel);
-        imgcontainer.style= "max-width:100%; height:200px; overflow: hidden; display: inline-block; position: relative;";
-        artikel.appendChild(imgcontainer);
-
-        if (JSON.parse(result["json_metadata"]).image[0] != null) {
-              imgcontainer.appendChild(img);
-              imgcontainer.appendChild(br);
-        }
-        artikel.appendChild(title);
-        artikel.appendChild(date);*/
+        //button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."
+        //button.setAttribute = "ArtikelVote(" + author + "," + permlink + ")"
       });
-      //content_box.insertBefore(content_box.appendChild(artikel),content_box[2]);
       content_box.insertBefore(artikel,content_read.children[0]);
-      /*artikel.appendChild(imgcontainer);
-      imgcontainer.style = "width:100%; height:480px; text-align:center; overflow: hidden; display: inline-block; position: relative;";
-      //picture.style = "top: 50%; transform: translateX(-50%); width: 100%!important;";
-      imgcontainer.appendChild(picture);
-      if (img.src != null) {
-        picture.appendChild(img);
-        imgcontainer.appendChild(br);
-      }*/
       artikel.appendChild(title);
       artikel.appendChild(content_text);
       steem.api.getActiveVotes(author, permlink, function(err, result) {
@@ -202,18 +156,13 @@
 
       const artikel = document.createElement("artikel");
       steem.api.getContent(author, permlink, function(err, result) {
-        //console.log(err, para.innerText = result["body"]);
         if (JSON.parse(result["json_metadata"]).image != null) {
           img.src = JSON.parse(result["json_metadata"]).image[0];
           img.style = "width:100px;height:auto;";
         }
-        //img.innerHTML = img.innerHTML + "<br>";
         title.innerText = result["title"];
         title.href = "https://steemit.com" + result["url"];
-        //title.innerHTML = title.innerHTML + "<br>";
         date.innerText = result["created"];
-        //date.innerHTML = date.innerHTML + "<br>";
-        //var img = '<img src="' + JSON.parse(result["json_metadata"]).image + '" alt="' + result["title"] + '" style="width:80%;height:auto;">';
       });
       artikel.innerText;
       content_box.appendChild(artikel);
@@ -225,7 +174,7 @@
 
     function createArtikelPage_steamworld_api() {
       var jf = new XMLHttpRequest();
-      jf.open("GET", "https://heldendesbildschirms.de/artikel/templates/PostsByAuthor.json", false);
+      jf.open("GET", "templates/PostsByAuthor.json", false);
       jf.send(null)
       const jf_PBA = JSON.parse(jf.response).inhalt;
       const cols = JSON.parse(jf_PBA).result.cols;
@@ -256,20 +205,19 @@
 
         if (JSON.parse(rows[i][cols.json_metadata]).image != null && JSON.parse(rows[i][cols.json_metadata]).image[0] != undefined) {
           img.src = JSON.parse(rows[i][cols.json_metadata]).image[0];
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + rows[i][cols.permlink];
+          imgcontainera.href = "?artikel=" + rows[i][cols.permlink];
           img.style = "max-width:100%; height:auto; display: inline-block; vertical-align: middle;";
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         } else {
           img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
-          imgcontainera.href = "https://heldendesbildschirms.de/artikel/?artikel=" + rows[i][cols.permlink];
+          imgcontainera.href = "?artikel=" + rows[i][cols.permlink];
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         }
         title.innerText = rows[i][cols.title];
-        title.href = "https://heldendesbildschirms.de/artikel/?artikel=" + rows[i][cols.permlink];
+        title.href = "?artikel=" + rows[i][cols.permlink];
         date.innerText = new Date(rows[i][cols.created] * 1000);
         button.innerText = "Beitrag lesen (Schnellansicht)"
         button.onclick = function() {
-          //createArtikelContent(rows[i][cols.author], rows[i][cols.permlink]);
           createArtikelContent_steamworld_api(rows[i][cols.permlink]);
           location.href="#content_read";
         };
@@ -278,7 +226,6 @@
       artikel.appendChild(imgcontainera);
       imgcontainer.style = "width:100%; height:180px; overflow: hidden; display: inline-block; position: relative;";
       imgcontainera.appendChild(imgcontainer);
-      //picture.style = "top: 50%; transform: translateX(-50%); width: 100%!important;";
       imgcontainer.appendChild(picture);
       if (img.src != null) {
         picture.appendChild(img);
@@ -290,12 +237,9 @@
     }
 
     function createArtikelContent_steamworld_api(permlink) {
-      /*var jfn = new XMLHttpRequest();
-      jfn.open("GET", "https://heldendesbildschirms.de/artikel/generator.php?artikel=" + permlink, false);
-      jfn.send(null)*/
 
       var jf = new XMLHttpRequest();
-      jf.open("GET", "https://heldendesbildschirms.de/artikel/templates/index_"+ permlink + ".json", false);
+      jf.open("GET", "templates/index_"+ permlink + ".json", false);
       jf.send(null)
 
       const br = document.createElement("br");
@@ -317,7 +261,7 @@
         content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(JSON.parse(jf.response).body)));
 
         date.innerText = Date(JSON.parse(jf.response).datum);
-        button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."
+        //button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."
         //button.setAttribute = "ArtikelVote(" + author + "," + permlink + ")"
 
       content_box.insertBefore(artikel,content_read.children[0]);
