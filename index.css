@@ -1,0 +1,282 @@
+body {
+  margin: 0px;
+  font-family: arial;
+  background: #f1f1f1;
+}
+
+.head {
+  height: 100px;
+  background-color: rgba(0, 150, 200, 0.7);
+}
+
+.head a {
+  color: white;
+  text-decoration: none;
+  font-size: 200%;
+  font-weight: bold;
+  display: inline-block;
+  padding-top: 50px;
+  margin-left: 15px;
+  background-color: rgba(0, 0, 255, 0.1);
+}
+
+@media screen and (min-width:600px) {
+  .content {
+    padding-left: 10px;
+    padding-right: 10px;
+    grid-template-columns: repeat(2, 1.2fr);
+  }
+}
+
+@media screen and (min-width:800px) {
+  .content {
+    padding-left: 10px;
+    padding-right: 10px;
+    grid-template-columns: repeat(4, 1.2fr);
+  }
+}
+
+@media screen and (min-width:1000px) {
+  .content {
+    padding-left: 10px;
+    padding-right: 10px;
+    grid-template-columns: repeat(6, 1.2fr);
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .content {
+    padding-left: 25%;
+    padding-right: 25%;
+    //width: 1000px;
+    display: grid;
+    grid-template-columns: repeat(2, 1.2fr);
+    //grid-auto-rows: 45%;
+    grid-column-gap: 20px;
+    grid-row-gap: 10px;
+  }
+
+  .content artikel {
+    border-left: 25%;
+    border-right: 25%;
+  }
+
+  #twitch-embed iframe {
+    //margin-top: 10px;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.content {
+  margin-top: 10px;
+}
+
+.content_read artikel {
+  margin-top: 10px;
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-bottom: 10px;
+  display: inline-block;
+  word-wrap: break-word;
+  word-break: break-word;
+  background-color: rgba(255, 255, 255, 1.0);
+}
+
+.content_read img {
+  max-width: 100%;
+  max-height: 480px;
+  height: auto;
+  object-fit: cover;
+}
+.content_read datum {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.content artikel {
+  //margin-top: 10px;
+  border-left: 10px;
+  border-right: 10px;
+  height: max-content;
+  display: inline-block;
+  float: left;
+  text-align: center;
+  text-decoration: none;
+  //margin-top: 15px;
+  background-color: rgba(0, 0, 255, 0.5);
+  color: rgba(255, 255, 255, 1.0);
+  transition: ease-in all 300ms;
+}
+
+.content a:hover {
+  text-decoration: none;
+  color: #FFFFFF;
+  background-color: rgba(0, 0, 255, 0.7);
+  transform: translate(0px, -1px);
+  box-shadow: 0px 0px 10px -2px rgba(0, 0, 255, 1.0);
+}
+
+@media only screen and (min-width: 47.5em) {
+  .content picture {
+    //position: absolute;
+    //width: 100%!important;
+    //top: 50%;
+    //transform: translateY(-50%);
+  }
+}
+
+.content a {
+  //margin-top: 10px;
+  font-size: 150%;
+  width: 100%;
+  bottom: 10px;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  background-color: rgba(0, 0, 255, 0.5);
+  color: rgba(255, 255, 255, 1.0);
+  transition: ease-in all 300ms;
+}
+
+.content button {
+  padding: 0px;
+  border: none;
+  background: none;
+  font-size: 150%;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  background-color: rgba(0, 0, 255, 1.0);
+  color: rgba(255, 255, 255, 1.0);
+  transition: ease-in all 300ms;
+}
+
+.content input {
+  padding: 0px;
+  border: none;
+  background: none;
+  width: 80%;
+  font-size: 150%;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  background-color: rgba(0, 0, 255, 0.5);
+  color: rgba(255, 255, 255, 1.0);
+  transition: ease-in all 300ms;
+}
+
+.content_voiceserver a {
+  margin-top: 10px;
+  font-size: 180%;
+  width: 100%;
+  //height: : 33%;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  background-color: rgba(0, 0, 255, 0.5);
+  color: rgba(255, 255, 255, 1.0);
+  transition: ease-in all 300ms;
+}
+
+#werbung {
+  padding-left: 2%;
+  padding-right: 2%;
+  padding-bottom: 25px;
+}
+
+#werbung iframe {
+  display: inline-block;
+  text-align: left;
+  text-decoration: none;
+  margin-top: 1%;
+  padding: 5px 10px;
+  background-color: rgba(0, 0, 255, 0.5);
+  color: rgba(255, 255, 255, 1.0);
+}
+
+footer {
+  margin-top: 1%;
+  clear: both;
+  background-color: rgba(0, 0, 255, 0.5);
+  color: rgba(255, 255, 255, 1.0);
+  border-top: 2px solid white;
+  width: 100%;
+  position: absolute;
+  //bottom: 0;
+}
+
+footer text {
+  float: right;
+  display: inline-block;
+  text-decoration: none;
+  margin-right: 10%;
+}
+
+.smoothie {
+  height: 200px;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+s .scroller {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    //background-color: darkblue;
+  }
+
+  .content_read artikel {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  .content {
+    padding-left: 10px;
+    padding-right: 10px;
+    display: inline-block;
+    //display: grid;
+    //grid-template-columns: repeat(1,1.2fr);
+    //grid-auto-rows: 45%;
+    //grid-column-gap: 20px;
+    //grid-row-gap: 10px;
+  }
+
+  .content artikel {
+    margin-top: 10px;
+    border-left: 10px;
+    border-right: 10px;
+    display: inline-block;
+    float: left;
+    text-align: center;
+    text-decoration: none;
+    width: 100%;
+    //margin-top: 15px;
+    background-color: rgba(0, 0, 255, 0.5);
+    color: rgba(255, 255, 255, 1.0);
+    transition: ease-in all 300ms;
+  }
+
+  .head a {
+    color: white;
+    text-decoration: none;
+    font-size: 160%;
+    font-weight: bold;
+    display: inline-block;
+    padding-top: 50px;
+    margin-left: 15px;
+    background-color: rgba(0, 0, 255, 0.1);
+  }
+
+  #twitch-embed iframe {
+    margin-top: 10px;
+    width: 100%;
+    height: 60%;
+  }
+}
