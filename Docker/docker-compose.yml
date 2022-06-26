@@ -1,0 +1,7 @@
+Steem-Blog-Engine:
+  image: steem-blaog-engine:latest
+  restart: always
+  ports:
+    - 8080:8080/udp
+  volumes:
+    - ./blog:/var/www/html/
