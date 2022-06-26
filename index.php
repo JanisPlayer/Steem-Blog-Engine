@@ -208,7 +208,13 @@ $permlink = "";
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 ob_start();
 if (isset($_GET['artikel'])) {
+  if (file_exists($pathtemplate."PostsByAuthor.json")) {  //Datei vorhanden?
+    if (time() - filemtime($pathtemplate."PostsByAuthor.json")  >= 300) { //Sind die 5 Minuten abgelaufen?
+      gen_site($_GET['artikel'],true);
+    }
+  } else {
   gen_site($_GET['artikel'],true);
+  }
 } else {
   $jsond = open_api_getPostsByAuthor();
   for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
