@@ -76,7 +76,7 @@
           imgcontainera.href = "?artikel=" + permlink;
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         } else {
-          img.src = "/img/Janis_Pickel_Bild.jpg"
+          img.src = "img/404.jpg";
           imgcontainera.href = "?artikel=" + permlink;
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         }
@@ -126,7 +126,7 @@
           img.src = JSON.parse(result["json_metadata"]).image[0];
           img.style = "width: auto; height: 100%; object-fit: cover;";
         } else {
-          img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
+          img.src = "img/404.jpg";
           img.style = "width: auto; height: 100%; object-fit: cover;";
         }
         title.innerHTML = "<h1>" + result["title"];
@@ -209,7 +209,7 @@
           img.style = "max-width:100%; height:auto; display: inline-block; vertical-align: middle;";
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         } else {
-          img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
+          img.src = "img/404.jpg";
           imgcontainera.href = "?artikel=" + rows[i][cols.permlink];
           img.style = "width: 100%; height: 180px; object-fit: cover;";
         }

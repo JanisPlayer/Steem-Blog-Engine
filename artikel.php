@@ -96,7 +96,7 @@
           img.src = JSON.parse(result["json_metadata"]).image[0];
           img.style = "width: auto; height: 100%; object-fit: cover;";
         } else {
-          img.src = "https://heldendesbildschirms.dynv6.net/img/Janis_Pickel_Bild.jpg"
+          img.src = "img/404.jpg";
           img.style = "width: auto; height: 100%; object-fit: cover;";
         }
         title.innerHTML = "<h1>" + result["title"];
@@ -123,7 +123,7 @@
       jfn.send(null)*/
 
       var jf = new XMLHttpRequest();
-      jf.open("GET", "/artikel/templates/index_"+ permlink + ".json", false);
+      jf.open("GET", "../templates/index_"+ permlink + ".json", false);
       jf.send(null)
 
       const br = document.createElement("br");

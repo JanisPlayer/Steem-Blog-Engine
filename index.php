@@ -161,19 +161,19 @@ global $pathtsite;
       file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data));
       render($pathtemplate.'artikel.php', $pathtsite.$permlink.'/', $data);
       if ($weiterleitung == true) {
-      echo "Generiert weiterleitung... zu ".'https://heldendesbildschirms.de/artikel/'.$permlink.'/';
-      header('Location: https://heldendesbildschirms.de/artikel/'.$permlink.'/', true, 301);
+      echo "Generiert weiterleitung... zu ".'./'.$permlink.'/';
+      header('Location: ./'.$permlink.'/', true, 301);
       }
   } else {
     if ($exist_site_bool != false) {
       if ($weiterleitung == true) {
-      echo "Generiert weiterleitung... zu ".'https://heldendesbildschirms.de/artikel/'.$permlink.'/';
-      header('Location: https://heldendesbildschirms.de/artikel/'.$permlink.'/', true, 301);
+      echo "Generiert weiterleitung... zu ".'./'.$permlink.'/';
+      header('Location: ./'.$permlink.'/', true, 301);
       }
       } else {
         if ($weiterleitung == true) {
-        echo "Seite ungültig weiterleitung... zu ".'https://heldendesbildschirms.de/artikel/';
-        header('Location: https://heldendesbildschirms.de/artikel/');
+        echo "Seite ungültig weiterleitung... zu ".'./';
+        header('Location: ./');
         }
       }
   }
