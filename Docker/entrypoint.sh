@@ -1,4 +1,4 @@
-name="steemchiller"
+name="yourname"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/Docker/docker-compose.yml"
 mkdir blog
 cd blog
