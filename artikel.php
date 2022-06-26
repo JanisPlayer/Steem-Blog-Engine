@@ -213,7 +213,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5350651163680266" crossorigin="anonymous"></script>
   <div class="head">
     <img src="/img/logo.png" alt="Logo von @Zauberah erstellt." style="width:64px;height:51px;">
-    <a href="/artikel/">Helden des Bildschirms</a>
+    <a href="/">Helden des Bildschirms</a>
   </div>
 
 </head>
