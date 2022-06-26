@@ -14,7 +14,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 
-  <link rel="stylesheet" href="/templates/index.css">
+  <link rel="stylesheet" href="../templates/index.css">
 
   <link rel="apple-touch-icon" sizes="57x57" href="/icon/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="/icon/apple-icon-60x60.png">
@@ -213,7 +213,7 @@
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5350651163680266" crossorigin="anonymous"></script>
   <div class="head">
     <img src="/img/logo.png" alt="Logo von @Zauberah erstellt." style="width:64px;height:51px;">
-    <a href="/">Helden des Bildschirms</a>
+    <a href="../">Helden des Bildschirms</a>
   </div>
 
 </head>
