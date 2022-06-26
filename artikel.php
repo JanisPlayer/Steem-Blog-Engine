@@ -38,7 +38,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/steem/dist/steem.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script type="text/javascript" src="/artikel/purify.min.js"></script>
+  <script type="text/javascript" src="../purify.min.js"></script>
   <!-- <script type="text/javascript" src="https://raw.githubusercontent.com/cure53/DOMPurify/main/dist/purify.min.js"></script> -->
   <script>
     //createArtikelPage();
