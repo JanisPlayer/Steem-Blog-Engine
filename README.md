@@ -1,5 +1,5 @@
 # Steem-Blog-Engine
-Eine kleine Möglichkeit wie man Steem über Javascript und PHP als Datenbank nutzt.
+Eine kleine Möglichkeit, wie man Steem über Javascript und PHP als Datenbank nutzt.
 
 Javascript only Modus mit Steem_API oder Steemworld_API
 PHP und Javascript Modus, die Seiten werden mit Javascript zur Hälfte erstellt.
