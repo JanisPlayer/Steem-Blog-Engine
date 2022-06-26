@@ -43,8 +43,8 @@
   <script>
     //createArtikelPage();
 
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "/artikel/generator.php");
+    /*let xhr = new XMLHttpRequest();
+    xhr.open("POST", "../");
 
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");
@@ -55,7 +55,7 @@
       "genallcontent": true,
     }`;
 
-    xhr.send(data);
+    xhr.send(data);*/
 
     document.addEventListener ("DOMContentLoaded", () => {
       //createArtikelContent("janisplayer", "<?=$permlink?>");
@@ -96,7 +96,7 @@
           img.src = JSON.parse(result["json_metadata"]).image[0];
           img.style = "width: auto; height: 100%; object-fit: cover;";
         } else {
-          img.src = "img/404.jpg";
+          img.src = "404.jpg";
           img.style = "width: auto; height: 100%; object-fit: cover;";
         }
         title.innerHTML = "<h1>" + result["title"];
