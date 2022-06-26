@@ -1,7 +1,10 @@
-Steem-Blog-Engine:
-  image: steem-blaog-engine:latest
-  restart: always
-  ports:
-    - 8080:8080/udp
-  volumes:
-    - ./blog:/var/www/html/
+version: '3.8'
+services:
+  php-apache-environment:
+    container_name: php-apache
+    image: php:8.0-apache
+    volumes:
+      - ./blog:/var/www/html/
+    ports:
+      - 8000:80
+    restart: always
