@@ -31,6 +31,19 @@ function escape(string $data){
     return htmlspecialchars($data,ENT_QUOTES,'UTF-8');
 }
 
+
+function file_check(string $filename, int $sec)
+{
+  if (file_exists($pathtemplate.$filename)) {  //Datei vorhanden?
+    if (time() - filemtime($pathtemplate.$filename)  >= $sec) { //Sind die 5 Minuten abgelaufen?
+      return 1;
+    }
+  } else {
+    return 1;
+  }
+  return 0;
+}
+
 function open_api_getPostsByAuthor () { //Die Funktion kann später falls benötigt auch die gesamte API öffnen.
   global $jsond;
   global $pathtemplate;
@@ -107,7 +120,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $permlink = read_api($i,"permlink");
         $data['title'] = read_api($i,"title");
         //Muss verbessert werden.
-        $data['description'] = read_api($i,"body");
+        $data['description'] = htmlspecialchars(read_api($i,"body"), ENT_QUOTES, 'UTF-8');
         $data['keywords'] = implode(", ", json_decode(read_api($i,"json_metadata"), true)["tags"]);
         $data['upvote_count'] = read_api($i,"upvote_count");
         $data['downvote_count'] = read_api($i,"downvote_count");
@@ -208,12 +221,8 @@ $permlink = "";
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 ob_start();
 if (isset($_GET['artikel'])) {
-  if (file_exists($pathtemplate."PostsByAuthor.json")) {  //Datei vorhanden?
-    if (time() - filemtime($pathtemplate."PostsByAuthor.json")  >= 300) { //Sind die 5 Minuten abgelaufen?
+  if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
       gen_site($_GET['artikel'],true);
-    }
-  } else {
-  gen_site($_GET['artikel'],true);
   }
 } else {
   $jsond = open_api_getPostsByAuthor();
