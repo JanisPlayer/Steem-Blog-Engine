@@ -88,13 +88,9 @@ function read_api(int $i, string $cols) {
   if (isset($jsond) == false) {
   if (!isset($jsond)) {
     $jsond = open_api_getPostsByAuthor();
-  /*  echo "ja";
-  } else {
-  echo "nein";
-  echo isset($jsond);*/
     }
 }
-return $jsond["result"]["rows"][$i][$jsond["result"]["cols"][$cols]];
+return htmlspecialchars($jsond["result"]["rows"][$i][$jsond["result"]["cols"][$cols]], ENT_QUOTES, 'UTF-8');
 }
 
 //Wurde dieser Beitrag schon erstellt?
@@ -120,7 +116,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $permlink = read_api($i,"permlink");
         $data['title'] = read_api($i,"title");
         //Muss verbessert werden.
-        $data['description'] = htmlspecialchars(read_api($i,"body"), ENT_QUOTES, 'UTF-8');
+        $data['description'] = read_api($i,"body");
         $data['keywords'] = implode(", ", json_decode(read_api($i,"json_metadata"), true)["tags"]);
         $data['upvote_count'] = read_api($i,"upvote_count");
         $data['downvote_count'] = read_api($i,"downvote_count");
