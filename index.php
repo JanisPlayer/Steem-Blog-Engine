@@ -158,7 +158,27 @@ global $pathtsite;
       $permlink = $exist_site_bool;
 
       if (file_check("index_".$permlink.".json", 3600)) { //Wenn 1 Stunde vergangen sind, die Datei exisistiert wird diese neu erstellt oder später auf neustellung geprüft.
-        file_put_contents($pathtemplate."index_".$permlink.".json",json_encode(gen_site_data($permlink))); //Möglicherweise Probleme bei anderen Überschriften.
+        $file = json_decode(file_get_contents($pathtemplate."index_".$permlink.".json"), true);
+
+        $data = gen_site_data($permlink);
+
+        $savejson = false;
+
+        if ($file["permlink"] != $data["permlink"]) { //Sind die Daten noch aktuell? So ist das ganze schonender für die SSD braucht aber mehr leistung, vielleicht ist ein kompletter Abgleich auch besser.
+          $savejson = ture;
+        } elseif ($file["last_update"] != $data["last_update"]) {
+          $savejson = true;
+        } elseif ($file["upvote_count"] != $data["upvote_count"]) {
+          $savejson = true;
+        } elseif ($file["downvote_count"] != $data["downvote_count"]) {
+          $savejson = true;
+        } elseif ($file["body"] != $data["body"]) {
+          $savejson = true;
+        }
+
+        if ($savejson == true) {
+          file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data)); //Möglicherweise Probleme bei anderen Überschriften.
+        }
       }
   }
 
