@@ -178,6 +178,8 @@ global $pathtsite;
 
         if ($savejson == true) {
           file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data)); //Möglicherweise Probleme bei anderen Überschriften.
+        } else {
+          touch($pathtemplate."index_".$permlink.".json"); //Ansonsten funktioniert der file_check nicht.
         }
       }
   }
