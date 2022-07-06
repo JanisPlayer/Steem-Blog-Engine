@@ -50,7 +50,7 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
   //Maximale Aufrufe 1 alle 5 Minuten.
   if (file_exists($pathtemplate."PostsByAuthor.json")) {  //Datei vorhanden?
     if (time() - filemtime($pathtemplate."PostsByAuthor.json")  >= 300) { //Sind die 5 Minuten abgelaufen? Vielleicht schneller als die komplette Datei zu lesen.
-    //$file = json_decode(file_get_contents($pathtemplate."PostsByAuthor.json"), true);
+    $file = json_decode(file_get_contents($pathtemplate."PostsByAuthor.json"), true);
     //if ((time() - $file["datum"] >= 300)  ) { //Sind die 5 Minuten abgelaufen?
       //Neue Datei erstellen
       echo "Neue Datei erstellen";
@@ -61,7 +61,12 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
           'datum'=> time(),
           'inhalt'=> $json,
       ];
-      file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
+      if ($jsond == $file) { //Gleicher Inhalt?
+              file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
+      } else {
+          touch($pathtemplate."PostsByAuthor.json"); //Gleicher Inhalt Datum ändern.
+      }
+
       } else {
       //Datei lesen
       echo "Datei lesen";
@@ -250,13 +255,13 @@ $permlink = "";
 ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
-  if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
-      gen_site($_GET['artikel'],true);
-  }
+    gen_site($_GET['artikel'],true);
 } else {
-  $jsond = open_api_getPostsByAuthor();
-  for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
-    gen_site(read_api($i,"permlink", 0), false);
+  if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
+    $jsond = open_api_getPostsByAuthor();
+    for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
+      gen_site(read_api($i,"permlink", 0), false);
+    }
   }
 }
 
