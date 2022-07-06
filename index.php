@@ -32,8 +32,8 @@ function escape(string $data){
 }
 
 
-function file_check(string $filename, int $sec)
-{
+function file_check(string $filename, int $sec) {
+  global $pathtemplate;
   if (file_exists($pathtemplate.$filename)) {  //Datei vorhanden?
     if (time() - filemtime($pathtemplate.$filename)  >= $sec) { //Sind die 5 Minuten abgelaufen?
       return 1;
@@ -156,6 +156,10 @@ global $pathtsite;
 
   if ($exist_site_bool != false) {
       $permlink = $exist_site_bool;
+
+      if (file_check("index_".$permlink.".json", 3600)) { //Wenn 1 Stunde vergangen sind, die Datei exisistiert wird diese neu erstellt oder später auf neustellung geprüft.
+        file_put_contents($pathtemplate."index_".$permlink.".json",json_encode(gen_site_data($permlink))); //Möglicherweise Probleme bei anderen Überschriften.
+      }
   }
 
   $gen_site_bool = false;
@@ -220,7 +224,9 @@ $permlink = "";
 }*/
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
-ob_start();
+
+ob_start(); //Debug
+
 if (isset($_GET['artikel'])) {
   if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
       gen_site($_GET['artikel'],true);
@@ -231,7 +237,8 @@ if (isset($_GET['artikel'])) {
     gen_site(read_api($i,"permlink", 0), false);
   }
 }
-ob_end_clean();
+
+ob_end_clean(); //Debug
 
 include_once './artikel.html';
 
