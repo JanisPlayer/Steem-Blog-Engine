@@ -9,6 +9,7 @@ wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/index
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/index.css"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/404.jpg"
 wget "https://raw.githubusercontent.com/cure53/DOMPurify/main/dist/purify.min.js"
+wget "https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php"
 cp index.css ./templates/index.css
 sed -i "s/janisplayer/$name/g" ./index.php
 sed -i "s/janisplayer/$name/g" ./artikel.html
