@@ -58,8 +58,8 @@
     xhr.send(data);*/
 
     document.addEventListener ("DOMContentLoaded", () => {
-      //createArtikelContent("janisplayer", "<?=$permlink?>");
-      createArtikelContent_steamworld_api("<?=$permlink?>");
+      <?=$javascirpt_steemit?>createArtikelContent("janisplayer", "<?=$permlink?>");
+      <?=$javascirpt_steemworld?>createArtikelContent_steamworld_api("<?=$permlink?>");
     });
 
     function createArtikelPage() {
@@ -222,6 +222,7 @@
   <content_box>
 
     <div class="content_read" id ="content_read" >
+      <?=$body_parsedown?>
     </div>
 
     <div class="content">

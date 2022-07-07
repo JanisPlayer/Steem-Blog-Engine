@@ -3,7 +3,7 @@ error_reporting(-1);
 ini_set('display_errors', 'On');
 
 function render(string $pathtemplate, string $pathtsite, array $data){
-
+  global $modus;
     if (!file_exists($pathtsite)) {
         if (!mkdir($pathtsite, 0700, true)) {
           die('Erstellung der Verzeichnisse schlug fehl...');
@@ -14,6 +14,24 @@ function render(string $pathtemplate, string $pathtsite, array $data){
         trigger_error('Datei "'.$pathtemplate.'" wurde nicht gefunden');
         return null;
     }
+
+    //Wird noch wo anderes hingemacht.
+    if ($modus == 3) {
+    require_once 'Parsedown.php';
+    $Parsedown = new Parsedown();
+    $Parsedown->setSafeMode(true);
+    $Parsedown->setMarkupEscaped(true);
+    $data['body_parsedown'] = "<artikel>". '<a href="'."https://steemit.com/".$data['category']."/@".$data['author']."/".$data['permlink'].'"><h1>'.$data['title']."</h1></a>" .$Parsedown->text($data['body']) ."<votes>Votes:".$data['upvote_count']."</votes>" . "<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>" ."</artikel>";
+    $data['javascirpt'] = "//";
+    $data['javascirpt_steemit'] = "//";
+  } elseif ($modus == 2) {
+    $data['javascirpt_steemworld'] = "";
+    $data['javascirpt_steemit'] = "//";
+  } elseif ($modus == 1) {
+    $data['javascirpt_steemit'] = "";
+    $data['javascirpt_steemworld'] = "//";
+  }
+
     extract($data,EXTR_SKIP);
 
     ob_start();
@@ -152,6 +170,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
   return false;
 }
 
+
 function gen_site(string $permlink, bool $weiterleitung) { //Seite erstellen.
 global $pathtemplate;
 global $pathtsite;
@@ -245,6 +264,8 @@ $pathtemplatename = './artikel.php';
 $pathtsite = './';
 
 $permlink = "";
+
+$modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 /*if (isset($_GET['artikel'])) {
   gen_site($_GET['artikel'],true);
