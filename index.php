@@ -202,6 +202,11 @@ global $pathtsite;
 
         if ($savejson == true) {
           file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data)); //Möglicherweise Probleme bei anderen Überschriften.
+          if ($modus == 3) { //Damit im PHP Modus die Seite auch neu erstellt wird.
+            render($pathtemplate.'artikel.php', $pathtsite.$permlink.'/', $data);
+            /*$exist_site_bool = false;
+            $gen_site_bool =  ture;*/
+          }
         } else {
           touch($pathtemplate."index_".$permlink.".json"); //Ansonsten funktioniert der file_check nicht.
         }
@@ -210,6 +215,7 @@ global $pathtsite;
 
   $gen_site_bool = false;
   $data;
+  // if (($exist_site_bool == false) && (gen_site_bool == false)) {
   if ($exist_site_bool == false) {
     $gen_site_bool = gen_site_data($permlink);
     $data = $gen_site_bool;
