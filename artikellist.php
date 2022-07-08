@@ -43,9 +43,9 @@
   <script>
     //createArtikelPage();
 
-    /*document.addEventListener("DOMContentLoaded", () => {
-      createArtikelPage_steamworld_api();
-    });*/
+    document.addEventListener("DOMContentLoaded", () => {
+      //createArtikelPage_steamworld_api();
+    });
 
     function createArtikelPage() {
       var author = "janisplayer";
@@ -323,7 +323,6 @@
   </div>
 
   <content_box>
-
     <div class="content_read" id ="content_read" >
     </div>
 

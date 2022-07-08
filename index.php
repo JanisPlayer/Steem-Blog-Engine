@@ -83,7 +83,7 @@ function render_list ($jsond) {
       $data = gen_site_data(read_api($i,"permlink", 0));
       $renderdata['body_parsedown'] = $renderdata['body_parsedown']
       ."<artikel>"
-      .'<a href="?artikel=steemit-in-die-webseite-integrieren"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
+      .'<a href="?artikel='. read_api($i,"permlink", 0) . '"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
       ;
 
       if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
