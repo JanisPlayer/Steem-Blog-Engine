@@ -268,7 +268,7 @@
       artikel.appendChild(title);
       artikel.appendChild(content_text);
 
-      votes.innerText = "Votes: " + JSON.parse(jf.response).upvote_count;
+      votes.innerText = "Votes: up: " + JSON.parse(jf.response).upvote_count + " down: " + JSON.parse(jf.response).downvote_count;
 
       artikel.appendChild(votes);
       artikel.appendChild(button);

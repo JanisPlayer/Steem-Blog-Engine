@@ -2,7 +2,7 @@
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
-function render(string $pathtemplate, string $pathtsite, array $data){
+function render(string $pathtemplate, string $pathtsite, string $filename, array $data){
   global $modus;
     if (!file_exists($pathtsite)) {
         if (!mkdir($pathtsite, 0700, true)) {
@@ -16,12 +16,18 @@ function render(string $pathtemplate, string $pathtsite, array $data){
     }
 
     //Wird noch wo anderes hingemacht.
-    if ($modus == 3) {
+
+  if ($modus == 3) {
     require_once 'Parsedown.php';
     $Parsedown = new Parsedown();
     $Parsedown->setSafeMode(true);
     $Parsedown->setMarkupEscaped(true);
-    $data['body_parsedown'] = "<artikel>". '<a href="'."https://steemit.com/".$data['category']."/@".$data['author']."/".$data['permlink'].'"><h1>'.$data['title']."</h1></a>" .$Parsedown->text($data['body']) ."<votes>Votes:".$data['upvote_count']."</votes>" . "<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>" ."</artikel>";
+    $data['body_parsedown'] = "<artikel>"
+    .'<a href="'."https://steemit.com/".$data['category']."/@".$data['author']."/".$data['permlink'].'"><h1>'.$data['title']."</h1></a>"
+    .$Parsedown->text($data['body'])
+    ."<votes>Votes: up: ".$data['upvote_count'] ." down: ". +$data['downvote_count']."</votes>"
+    ."<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>"
+    ."</artikel>";
     $data['javascirpt'] = "//";
     $data['javascirpt_steemit'] = "//";
   } elseif ($modus == 2) {
@@ -38,11 +44,11 @@ function render(string $pathtemplate, string $pathtsite, array $data){
     require $pathtemplate;
     $content = ob_get_clean();
 
-    $handle = fopen ("$pathtsite".'index.html', "w");
+    $handle = fopen ("$pathtsite".$filename, "w");
     fwrite ($handle, $content);
     fclose ($handle);
 
-    echo "Seite erstellt unter".$pathtsite."index.html";
+    echo "Seite erstellt unter".$pathtsite.$filename;
 }
 
 function escape(string $data){
@@ -62,9 +68,55 @@ function file_check(string $filename, int $sec) {
   return 0;
 }
 
+function render_list ($jsond) {
+  global $pathtsite;
+
+  global $modus; //Ja ich weiß das geht auch schöner.
+  $modus = 4;
+
+  require_once 'Parsedown.php';
+  $Parsedown = new Parsedown();
+  $Parsedown->setSafeMode(true);
+  $Parsedown->setMarkupEscaped(true);
+  $renderdata['body_parsedown'] = "";
+    for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
+      $data = gen_site_data(read_api($i,"permlink", 0));
+      $renderdata['body_parsedown'] = $renderdata['body_parsedown']
+      ."<artikel>"
+      .'<a href="?artikel=steemit-in-die-webseite-integrieren"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
+      ;
+
+      if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
+        $renderdata['body_parsedown'] = $renderdata['body_parsedown']
+        .'<img src="'
+        .json_decode(read_api($i,"json_metadata", 0), true)["image"][0]
+        .'" style="width: 100%; height: 180px; object-fit: cover;">';
+      } else {
+        $renderdata['body_parsedown'] = $renderdata['body_parsedown']
+        .'<img src="'
+        ."404.jpg"
+        .'" style="width: 100%; height: 180px; object-fit: cover;">';
+      }
+
+      $renderdata['body_parsedown'] = $renderdata['body_parsedown']
+      .'</picture><br></imgcontainer></a>'
+      .'<a href="'."?artikel=".$data['permlink'].'">'.$data['title']."</a>"
+      //.$Parsedown->text($data['description'])
+      .'<button onclick="createArtikelContent_steamworld_api(' . "'" . read_api($i,"permlink", 0) . "'" . ')">Beitrag lesen (Schnellansicht)</button>'
+      ."<votes>Votes: up: ".$data['upvote_count'] ." down: ". +$data['downvote_count']."</votes>"
+      ."<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>"
+      ."</artikel>";
+      $data['javascirpt'] = "//";
+      $data['javascirpt_steemit'] = "//";
+    }
+    render($pathtsite.'artikellist.php', $pathtsite, "artikel.html", $renderdata);
+    $modus =3;
+}
+
 function open_api_getPostsByAuthor () { //Die Funktion kann später falls benötigt auch die gesamte API öffnen.
   global $jsond;
   global $pathtemplate;
+  global $modus;
   //Maximale Aufrufe 1 alle 5 Minuten.
   if (file_exists($pathtemplate."PostsByAuthor.json")) {  //Datei vorhanden?
     if (time() - filemtime($pathtemplate."PostsByAuthor.json")  >= 300) { //Sind die 5 Minuten abgelaufen? Vielleicht schneller als die komplette Datei zu lesen.
@@ -79,8 +131,14 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
           'datum'=> time(),
           'inhalt'=> $json,
       ];
-      if ($jsond == $file) { //Gleicher Inhalt?
-              file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
+      if ($jsond != $file) { //Gleicher Inhalt?
+          file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
+
+          //Kommt vielleicht auch noch wo anderes hin oder wird über eine andere Funktion aufgerufen, obwohl eher nicht.
+          if ($modus == 3) {
+              render_list($jsond);
+          }
+
       } else {
           touch($pathtemplate."PostsByAuthor.json"); //Gleicher Inhalt Datum ändern.
       }
@@ -102,6 +160,9 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
         'inhalt'=> $json,
     ];
     file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
+    if ($modus == 3) {
+      render_list($jsond);
+    }
   }
   return $jsond;
 }
@@ -154,13 +215,16 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $data['foldername'] = $permlink;
         $data['permlink'] = $permlink;
 
-        $json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
-        $jsond_getPost = json_decode($json_getPost, true);
+        global $modus; //Ja das ist eigentlich echt nicht schön.
+        if ($modus != 4) {
+          $json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
+          $jsond_getPost = json_decode($json_getPost, true);
 
-        $data['getPost'] = $jsond_getPost;
+          $data['getPost'] = $jsond_getPost;
 
-        $data['body'] = $jsond_getPost["result"]["body"];
-        $data['last_update'] = $jsond_getPost["result"]["last_update"];
+          $data['body'] = $jsond_getPost["result"]["body"];
+          $data['last_update'] = $jsond_getPost["result"]["last_update"];
+        }
 
         //return $permlink;
         return $data;
@@ -182,28 +246,32 @@ global $pathtsite;
       $permlink = $exist_site_bool;
 
       if (file_check("index_".$permlink.".json", 3600)) { //Wenn 1 Stunde vergangen sind, die Datei exisistiert wird diese neu erstellt oder später auf neustellung geprüft.
-        $file = json_decode(file_get_contents($pathtemplate."index_".$permlink.".json"), true);
-
-        $data = gen_site_data($permlink);
 
         $savejson = false;
+        $data = gen_site_data($permlink);
+        if (file_exists($pathtemplate."index_".$permlink.".json")) {  //Datei vorhanden?
+          $file = json_decode(file_get_contents($pathtemplate."index_".$permlink.".json"), true);
 
-        if ($file["permlink"] != $data["permlink"]) { //Sind die Daten noch aktuell? So ist das ganze schonender für die SSD braucht aber mehr leistung, vielleicht ist ein kompletter Abgleich auch besser.
-          $savejson = ture;
-        } elseif ($file["last_update"] != $data["last_update"]) {
-          $savejson = true;
-        } elseif ($file["upvote_count"] != $data["upvote_count"]) {
-          $savejson = true;
-        } elseif ($file["downvote_count"] != $data["downvote_count"]) {
-          $savejson = true;
-        } elseif ($file["body"] != $data["body"]) {
-          $savejson = true;
+          if ($file["permlink"] != $data["permlink"]) { //Sind die Daten noch aktuell? So ist das ganze schonender für die SSD braucht aber mehr leistung, vielleicht ist ein kompletter Abgleich auch besser.
+            $savejson = ture;
+          } elseif ($file["last_update"] != $data["last_update"]) {
+            $savejson = true;
+          } elseif ($file["upvote_count"] != $data["upvote_count"]) {
+            $savejson = true;
+          } elseif ($file["downvote_count"] != $data["downvote_count"]) {
+            $savejson = true;
+          } elseif ($file["body"] != $data["body"]) {
+            $savejson = true;
+          }
+        } else {
+            $savejson = true;
         }
 
         if ($savejson == true) {
           file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data)); //Möglicherweise Probleme bei anderen Überschriften.
+          global $modus; //Ja okay ich schreibe das vielleicht noch um, ist dann halt größer aber sauberer und übersichtlicher und schneller beim ausführen.
           if ($modus == 3) { //Damit im PHP Modus die Seite auch neu erstellt wird.
-            render($pathtemplate.'artikel.php', $pathtsite.$permlink.'/', $data);
+            render($pathtemplate.'artikel.php', $pathtsite.$permlink.'/', "index.html", $data);
             /*$exist_site_bool = false;
             $gen_site_bool =  ture;*/
           }
@@ -229,7 +297,7 @@ global $pathtsite;
 
   if (($exist_site_bool == false) && ($gen_site_bool != false)) {
       file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data));
-      render($pathtemplate.'artikel.php', $pathtsite.$permlink.'/', $data);
+      render($pathtemplate.'artikel.php', $pathtsite.$permlink.'/', "index.html", $data);
       if ($weiterleitung == true) {
       echo "Generiert weiterleitung... zu ".'./'.$permlink.'/';
       header('Location: ./'.$permlink.'/', true, 301);
@@ -272,14 +340,13 @@ $pathtsite = './';
 $permlink = "";
 
 $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
-
 /*if (isset($_GET['artikel'])) {
   gen_site($_GET['artikel'],true);
 }*/
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
-ob_start(); //Debug
+//ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
@@ -290,11 +357,12 @@ if (isset($_GET['artikel'])) {
       gen_site(read_api($i,"permlink", 0), false);
     }
   }
+  include_once './artikel.html';
 }
 
-ob_end_clean(); //Debug
+//ob_end_clean(); //Debug
 
-include_once './artikel.html';
+//include_once './artikel.html';
 
 /*if (iset($_POST['genallcontent'])) { //Wird per Javascript aufgerufen.
   $jsond = open_api_getPostsByAuthor();
