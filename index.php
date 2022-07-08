@@ -357,12 +357,11 @@ if (isset($_GET['artikel'])) {
       gen_site(read_api($i,"permlink", 0), false);
     }
   }
-  include_once './artikel.html';
 }
 
 ob_end_clean(); //Debug
 
-//include_once './artikel.html';
+include_once './artikel.html';
 
 /*if (iset($_POST['genallcontent'])) { //Wird per Javascript aufgerufen.
   $jsond = open_api_getPostsByAuthor();
