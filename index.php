@@ -102,7 +102,7 @@ function render_list ($jsond) {
       .'</picture><br></imgcontainer></a>'
       .'<a href="'."?artikel=".$data['permlink'].'">'.$data['title']."</a>"
       //.$Parsedown->text($data['description'])
-      .'<button onclick="createArtikelContent_steamworld_api(' . "'" . read_api($i,"permlink", 0) . "'" . ')">Beitrag lesen (Schnellansicht)</button>'
+      .'<button onclick="createArtikelContent_steamworld_api(' . "'" . read_api($i,"permlink", 0) . "'" . '); location.href=' . "'" . '#content_read' . "'" . ';">Beitrag lesen (Schnellansicht)</button>'
       ."<votes>Votes: up: ".$data['upvote_count'] ." down: ". +$data['downvote_count']."</votes>"
       ."<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>"
       ."</artikel>";
@@ -346,7 +346,7 @@ $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
-//ob_start(); //Debug
+ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
@@ -360,7 +360,7 @@ if (isset($_GET['artikel'])) {
   include_once './artikel.html';
 }
 
-//ob_end_clean(); //Debug
+ob_end_clean(); //Debug
 
 //include_once './artikel.html';
 
