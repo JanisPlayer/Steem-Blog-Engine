@@ -131,7 +131,7 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
           'datum'=> time(),
           'inhalt'=> $json,
       ];
-      if ($jsond != $file) { //Gleicher Inhalt?
+      if ($jsone != $file) { //Gleicher Inhalt?
           file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
 
           //Kommt vielleicht auch noch wo anderes hin oder wird über eine andere Funktion aufgerufen, obwohl eher nicht.
