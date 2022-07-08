@@ -5,6 +5,7 @@ cd blog
 mkdir templates
 wget -P ./templates/  "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/artikel.php"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/artikel.html"
+wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/artikellist.php"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/index.php"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/index.css"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/404.jpg"
