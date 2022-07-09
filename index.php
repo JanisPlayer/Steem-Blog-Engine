@@ -131,7 +131,7 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
           'datum'=> time(),
           'inhalt'=> $json,
       ];
-      if ($jsone != $file) { //Gleicher Inhalt?
+      if ($jsond != json_decode($file['inhalt'], true)) { //Gleicher Inhalt?
           file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
 
           //Kommt vielleicht auch noch wo anderes hin oder wird über eine andere Funktion aufgerufen, obwohl eher nicht.
@@ -361,7 +361,7 @@ if (isset($_GET['artikel'])) {
 
 ob_end_clean(); //Debug
 
-include_once './artikel.html';
+include_once './artikel.html'; //Muss vielleicht wo anders hin um den Dealy vom neugenerien nach 5 Min im PHP Modus zu verkleinern.
 
 /*if (iset($_POST['genallcontent'])) { //Wird per Javascript aufgerufen.
   $jsond = open_api_getPostsByAuthor();
