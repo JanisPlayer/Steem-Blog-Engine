@@ -132,7 +132,8 @@
         title.innerHTML = "<h1>" + result["title"];
         title.href = "https://steemit.com" + result["url"];
         //content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(result["body"])));
-        content_text.innerHTML = DOMPurify.sanitize(marked.parse(result["body"]));        date.innerText = result["created"];
+        content_text.innerHTML = DOMPurify.sanitize(marked.parse(result["body"]));
+        date.innerText = result["created"];
         //button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."
         //button.setAttribute = "ArtikelVote(" + author + "," + permlink + ")"
       });
@@ -259,7 +260,7 @@
         title.innerHTML = "<h1>" + JSON.parse(jf.response).title;
         title.href = "https://steemit.com" + "/" + JSON.parse(jf.response).category + "/@" + JSON.parse(jf.response).author + "/" +permlink;
         //content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(JSON.parse(jf.response).body)));
-        content_text.innerHTML = DOMPurify.sanitizen(marked.parse(JSON.parse(jf.response).body));
+        content_text.innerHTML = DOMPurify.sanitize(marked.parse(JSON.parse(jf.response).body));
 
         date.innerText = Date(JSON.parse(jf.response).datum);
         //button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."

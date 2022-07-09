@@ -102,7 +102,7 @@
         title.innerHTML = "<h1>" + result["title"];
         title.href = "https://steemit.com" + result["url"];
         //content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(result["body"])));
-        content_text.innerHTML = DOMPurify.sanitize(marked.parse(result["body"]));
+        content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(result["body"])));
         date.innerText = result["created"];
         //button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."
         //button.setAttribute = "ArtikelVote(" + author + "," + permlink + ")"
