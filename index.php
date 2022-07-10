@@ -386,7 +386,7 @@ $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
-//ob_start(); //Debug
+ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
@@ -399,7 +399,7 @@ if (isset($_GET['artikel'])) {
   }
 }
 
-//ob_end_clean(); //Debug
+ob_end_clean(); //Debug
 
 include_once './artikel.html'; //Muss vielleicht wo anders hin um den Dealy vom neugenerien nach 5 Min im PHP Modus zu verkleinern.
 
