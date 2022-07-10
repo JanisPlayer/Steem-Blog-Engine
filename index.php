@@ -199,7 +199,7 @@ function exist_site(string $artikel) {
 
 function better_description(string $text)
 {
-  $text = str_replace(array("####### ", "###### ", "#### ", "### ", "## ", "# ","---","* ", "+ ", "- ", "= " , "`") ,"> ", "", $text);
+  $text = str_replace(array("####### ", "###### ", "#### ", "### ", "## ", "# ","---","* ", "+ ", "- ", "= " , "`", "> "), "", $text);
   //trim(preg_replace('/\s\s+/', ' ', str_replace(substr($text, $position, $position2-$position+1), "",$text))
   $text = trim(preg_replace('/\s\s+/', ' ', $text));
   for ($i=0; ($i <= 10 && (strpos($text, "<") !== false)  && (strpos($text, ">") !== false)); $i++) {
