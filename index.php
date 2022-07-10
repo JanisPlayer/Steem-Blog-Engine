@@ -197,40 +197,90 @@ function exist_site(string $artikel) {
   return false;
 }
 
+function strposa($haystack, $needles=array(), $offset=0) { //https://stackoverflow.com/questions/6284553/using-an-array-as-needles-in-strpos
+        $chr = array();
+        foreach($needles as $needle) {
+                $res = strpos($haystack, $needle, $offset);
+                if ($res !== false) $chr[$needle] = $res; //Muss noch geändert werden. return
+        }
+        if(empty($chr)) return false;
+        return min($chr);
+}
+
 function better_description(string $text)
 {
+  //HTML Makedown Filter
   $text = str_replace(array("####### ", "###### ", "#### ", "### ", "## ", "# ","---","* ", "+ ", "- ", "= " , "`", "> "), "", $text);
-  //trim(preg_replace('/\s\s+/', ' ', str_replace(substr($text, $position, $position2-$position+1), "",$text))
+
+  //Enter ersetzen
   $text = trim(preg_replace('/\s\s+/', ' ', $text));
+
+  //HTML Code Filter
   for ($i=0; ($i <= 10 && (strpos($text, "<") !== false)  && (strpos($text, ">") !== false)); $i++) {
     $position = strpos($text, "<");
     if($position !== false) {
-      $position2 = strpos($text, ">");
+      $position2 = strpos($text, ">", $position) - $position;
       if($position2 != false) {
             $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
       }
     }
   }
 
+  //Makedown Links Filter. Der ist so komplex geworden der sollte in eine Funktion und damit der leicher zu programieren ist.
   //while (strpos($text, "[") !== false && (strpos($text, ")") !== false)) { Gibt sonnst eine Endlosschleife.
-  for ($i=0; ($i <= 10 && (strpos($text, "[") !== false) && (strpos($text, ")") !== false)); $i++) {
+  /*  for ($i=0; ($i <= 10 && (strpos($text, "[") !== false || strpos($text, "![") !== false) && ((strpos($text, ")") !== false) || strpos($text, "(") !== false)); $i++) {
+      $position = strposa($text, array("[", "!["));
+      if($position !== false) {
+          $position2 = strposa($text, array(")", " "), $position - $position);
+          if($position2 !== false) {
+             $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
+          } else {
+              $text = str_replace(substr($text, $position, strlen($text)), "",$text);
+          }
+      }
+  }*/
+
+  for ($i=0; ($i <= 10 && (strpos($text, "[") !== false || strpos($text, "![") !== false) && ((strpos($text, ")") !== false) || strpos($text, "(") !== false)); $i++) {
     $position = strpos($text, "![");
     if($position !== false) {
-          $position2 = strpos($text, ")");
+          $position2 = strpos($text, ")", $position - $position);
           if($position2 !== false) {
-              $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
+             $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
+          } else {
+            $position2 = strpos($text, "(", $position - $position);
+            if($position2 !== false) {
+               $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
+            } else {
+              $text = str_replace(substr($text, $position, strlen($text)), "",$text);
+              break;
+            }
           }
       } else {
-      $position = strpos($text, "[");
+      $position = strpos($text, ("["));
       if($position !== false) {
-        $position2 = strpos($text, ")");
+        $position2 = strpos($text, ")", $position - $position);
         if($position2 !== false) {
            $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
         } else {
-            $text = $text;
+          $position2 = strpos($text, "(", $position - $position);
+          if($position2 !== false) {
+             $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
+          } else {
+            $text = str_replace(substr($text, $position, strlen($text)), "",$text);
+            break;
+          }
         }
-      } else {
-        $text = $text;
+      }
+    }
+  }
+
+  //HTML Link Filter. Erkennt nur http und https Links.
+  for ($i=0; ($i <= 10 && (strpos($text, "http") !== false)  && (strpos($text, " ") !== false)); $i++) {
+    $position = strpos($text, "http");
+    if($position !== false) {
+      $position2 = strpos($text, " ", $position) - $position;
+      if($position2 != false) {
+            $text = str_replace(substr($text, $position, $position2), "",$text);
       }
     }
   }
