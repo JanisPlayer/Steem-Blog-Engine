@@ -109,6 +109,10 @@ body {
   transition: ease-in all 300ms;
 }
 
+.content description{
+word-wrap: break-word;
+word-break: break-word;
+}
 
 .content datum{
   display: flex;
