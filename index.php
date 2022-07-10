@@ -101,7 +101,7 @@ function render_list ($jsond) {
       $renderdata['body_parsedown'] = $renderdata['body_parsedown']
       .'</picture><br></imgcontainer></a>'
       .'<a href="'."?artikel=".$data['permlink'].'">'.$data['title']."</a>"
-      //.$Parsedown->text($data['description'])
+      .'<description>'.$data['description'].'<description>'
       .'<button onclick="createArtikelContent_steamworld_api(' . "'" . read_api($i,"permlink", 0) . "'" . '); location.href=' . "'" . '#content_read' . "'" . ';">Beitrag lesen (Schnellansicht)</button>'
       ."<votes>Votes: up: ".$data['upvote_count'] ." down: ". +$data['downvote_count']."</votes>"
       ."<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>"
@@ -199,25 +199,42 @@ function exist_site(string $artikel) {
 
 function better_description(string $text)
 {
-  $position = strpos($text, "![");
-  if($position !== false) {
-        $position2 = strpos($text, ")");
-        if($position2 != false) {
-            return trim(preg_replace('/\s\s+/', ' ', str_replace(substr($text, $position, $position2-$position+1), "",$text)));
-        }
-    } else {
-    $position = strpos($text, "[");
+  $text = str_replace(array("####### ", "###### ", "#### ", "### ", "## ", "# ","---","* ", "+ ", "- ", "= " , "`"), "", $text);
+  //trim(preg_replace('/\s\s+/', ' ', str_replace(substr($text, $position, $position2-$position+1), "",$text))
+  $text = trim(preg_replace('/\s\s+/', ' ', $text));
+  for ($i=0; ($i <= 10 && (strpos($text, "<") !== false)  && (strpos($text, ">") !== false)); $i++) {
+    $position = strpos($text, "<");
     if($position !== false) {
-      $position2 = strpos($text, ")");
+      $position2 = strpos($text, ">");
       if($position2 != false) {
-         return trim(preg_replace('/\s\s+/', ' ', str_replace(substr($text, $position, $position2-$position+1), "",$text)));
-      } else {
-          return $text;
+            $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
       }
-    } else {
-      return $text;
     }
   }
+
+  //while (strpos($text, "[") !== false && (strpos($text, ")") !== false)) { Gibt sonnst eine Endlosschleife.
+  for ($i=0; ($i <= 10 && (strpos($text, "[") !== false) && (strpos($text, ")") !== false)); $i++) {
+    $position = strpos($text, "![");
+    if($position !== false) {
+          $position2 = strpos($text, ")");
+          if($position2 !== false) {
+              $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
+          }
+      } else {
+      $position = strpos($text, "[");
+      if($position !== false) {
+        $position2 = strpos($text, ")");
+        if($position2 !== false) {
+           $text = str_replace(substr($text, $position, $position2-$position+1), "",$text);
+        } else {
+            $text = $text;
+        }
+      } else {
+        $text = $text;
+      }
+    }
+  }
+  return htmlspecialchars($text);
 }
 
 function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
@@ -228,7 +245,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $permlink = read_api($i,"permlink", 0);
         $data['title'] = read_api($i,"title", 1);
         //Muss verbessert werden.
-        $data['description'] = better_description(read_api($i,"body", 1));
+        $data['description'] = better_description(read_api($i,"body", 0));
         $data['keywords'] = implode(", ", json_decode(read_api($i,"json_metadata", 0), true)["tags"]);
         $data['upvote_count'] = read_api($i,"upvote_count", 0);
         $data['downvote_count'] = read_api($i,"downvote_count", 0);
@@ -369,7 +386,7 @@ $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
-ob_start(); //Debug
+//ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
@@ -382,7 +399,7 @@ if (isset($_GET['artikel'])) {
   }
 }
 
-ob_end_clean(); //Debug
+//ob_end_clean(); //Debug
 
 include_once './artikel.html'; //Muss vielleicht wo anders hin um den Dealy vom neugenerien nach 5 Min im PHP Modus zu verkleinern.
 
