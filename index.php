@@ -197,6 +197,29 @@ function exist_site(string $artikel) {
   return false;
 }
 
+function better_description(string $text)
+{
+  $position = strpos($text, "![");
+  if($position !== false) {
+        $position2 = strpos($text, ")");
+        if($position2 != false) {
+            return trim(preg_replace('/\s\s+/', ' ', str_replace(substr($text, $position, $position2-$position+1), "",$text)));
+        }
+    } else {
+    $position = strpos($text, "[");
+    if($position !== false) {
+      $position2 = strpos($text, ")");
+      if($position2 != false) {
+         return trim(preg_replace('/\s\s+/', ' ', str_replace(substr($text, $position, $position2-$position+1), "",$text)));
+      } else {
+          return $text;
+      }
+    } else {
+      return $text;
+    }
+  }
+}
+
 function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
 //global $jsond; //global
   $jsond = open_api_getPostsByAuthor();
@@ -205,7 +228,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $permlink = read_api($i,"permlink", 0);
         $data['title'] = read_api($i,"title", 1);
         //Muss verbessert werden.
-        $data['description'] = read_api($i,"body", 1);
+        $data['description'] = better_description(read_api($i,"body", 1));
         $data['keywords'] = implode(", ", json_decode(read_api($i,"json_metadata", 0), true)["tags"]);
         $data['upvote_count'] = read_api($i,"upvote_count", 0);
         $data['downvote_count'] = read_api($i,"downvote_count", 0);
