@@ -436,6 +436,10 @@ $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
+if (file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
+  include_once './artikel.html';
+}
+
 ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
@@ -451,7 +455,7 @@ if (isset($_GET['artikel'])) {
 
 ob_end_clean(); //Debug
 
-include_once './artikel.html'; //Muss vielleicht wo anders hin um den Dealy vom neugenerien nach 5 Min im PHP Modus zu verkleinern.
+include_once './artikel.html'; //Muss vielleicht wo anders hin um den Dealy vom neugenerien nach 5 Min im PHP Modus zu verkleinern. Da es include_once ist sollte es selbst erkennen dass es oben schon eingebunden wurde.
 
 /*if (iset($_POST['genallcontent'])) { //Wird per Javascript aufgerufen.
   $jsond = open_api_getPostsByAuthor();
