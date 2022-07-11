@@ -95,7 +95,9 @@ function render_list ($jsond) {
         //$filename = 'preview'.'.jpg'; bug wieso auch immer.
 
         if (!file_exists($pathtsite.$data['permlink'])) {
+          $modus = 3; //Das auf alle fälle, aber ich mache das wann Anderes.
           gen_site($data['permlink'], false); //Ja ich sollte das auch anderes lösen. :D
+          $modus = 4; //Das auf alle fälle, aber ich mache das wann Anderes.
         }
 
         if (!file_exists($img_src)) {
