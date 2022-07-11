@@ -83,13 +83,49 @@ function render_list ($jsond) {
       $data = gen_site_data(read_api($i,"permlink", 0));
       $renderdata['body_parsedown'] = $renderdata['body_parsedown']
       ."<artikel>"
-      .'<a href="?artikel='. read_api($i,"permlink", 0) . '"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
+      .'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
       ;
 
-      if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
+      $json_metadata = read_api($i,"json_metadata", 0);
+      $img_url = json_decode($json_metadata, true)["image"][0]; //Uncaught TypeError: Cannot access offset of type string on string 1h Stunde RIP nur weil ich Idiot $jsond genutzt habe.
+      if (isset(json_decode($json_metadata, true)["image"]) && isset($img_url)) {
+      //if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
+        //Erstellt Vorschaubild zuerst nur für den PHP only Modus. Sollte vielleicht noch eine Funktion werden. https://stackoverflow.com/questions/10870129/compress-jpeg-on-server-with-php
+        $img_src = $pathtsite.$data['permlink'].'/img/';
+        //$filename = 'preview'.'.jpg'; bug wieso auch immer.
+
+        if (!file_exists($pathtsite.$data['permlink'])) {
+          gen_site($data['permlink'], false); //Ja ich sollte das auch anderes lösen. :D
+        }
+
+        if (!file_exists($img_src)) {
+          mkdir($img_src);
+        }
+
+        $img_src = $img_src.'preview'.'.jpg';
+        echo " ". $img_src;
+        if (!file_exists($img_src)) {
+          try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+            $img = new Imagick();
+            ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+            $img->readImage($img_url);
+            ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+            //$img->scaleImage(284, 180, true); //Zu stark verpixelt bei der Index Seite.
+            $img->cropThumbnailImage(284, 180, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+            $img->setImageCompression(Imagick::COMPRESSION_JPEG);
+            $img->setImageCompressionQuality(90);
+            $img->stripImage();
+            $img->writeImage($img_src);
+            //$img->clean();
+          } catch (Exception $e) {
+              $img_src = "404.jpg";
+              echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+          }
+        }
+
         $renderdata['body_parsedown'] = $renderdata['body_parsedown']
         .'<img src="'
-        .json_decode(read_api($i,"json_metadata", 0), true)["image"][0]
+        .$img_src
         .'" style="width: 100%; height: 180px; object-fit: cover;">';
       } else {
         $renderdata['body_parsedown'] = $renderdata['body_parsedown']
@@ -102,7 +138,7 @@ function render_list ($jsond) {
       .'</picture><br></imgcontainer></a>'
       .'<a href="'."?artikel=".$data['permlink'].'">'.$data['title']."</a>"
       .'<description>'.$data['description'].'<description>'
-      .'<button onclick="createArtikelContent_steamworld_api(' . "'" . read_api($i,"permlink", 0) . "'" . '); location.href=' . "'" . '#content_read' . "'" . ';">Beitrag lesen (Schnellansicht)</button>'
+      .'<button onclick="createArtikelContent_steamworld_api(' . "'" . $data['permlink'] . "'" . '); location.href=' . "'" . '#content_read' . "'" . ';">Beitrag lesen (Schnellansicht)</button>'
       ."<votes>Votes: up: ".$data['upvote_count'] ." down: ". +$data['downvote_count']."</votes>"
       ."<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>"
       ."</artikel>";
@@ -179,7 +215,6 @@ if ($xss_protection) {
   return htmlspecialchars($jsond["result"]["rows"][$i][$jsond["result"]["cols"][$cols]], ENT_QUOTES, 'UTF-8');
 }
 return $jsond["result"]["rows"][$i][$jsond["result"]["cols"][$cols]];
-
 }
 
 //Wurde dieser Beitrag schon erstellt?
@@ -436,26 +471,26 @@ $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
-ob_start(); //Debug
+//ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
 } else {
   if (file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
-    ob_end_clean(); //Debug
+    //ob_end_clean(); //Debug
     include_once './artikel.html';
-    ob_start(); //Debug
+    //ob_start(); //Debug
   }
 
   if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
     $jsond = open_api_getPostsByAuthor();
     for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
-      gen_site(read_api($i,"permlink", 0), false);
+        gen_site(read_api($i,"permlink", 0), false);
     }
   }
 }
 
-ob_end_clean(); //Debug
+//ob_end_clean(); //Debug
 
 include_once './artikel.html'; //Muss vielleicht wo anders hin um den Dealy vom neugenerien nach 5 Min im PHP Modus zu verkleinern. Da es include_once ist sollte es selbst erkennen dass es oben schon eingebunden wurde.
 
