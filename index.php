@@ -442,7 +442,9 @@ if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
 } else {
   if (file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
+    ob_end_clean(); //Debug
     include_once './artikel.html';
+    ob_start(); //Debug
   }
 
   if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
