@@ -436,15 +436,15 @@ $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
-if (file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
-  include_once './artikel.html';
-}
-
 ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
 } else {
+  if (file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
+    include_once './artikel.html';
+  }
+
   if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
     $jsond = open_api_getPostsByAuthor();
     for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
