@@ -104,7 +104,7 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
                 $img->stripImage();
                 $img->writeImage($img_src);
                 //$img->clean();
-                $body = str_replace($img_url,'./img/'.$i.'.jpg',$body);
+                $body = str_replace($img_url,$pathtsite.$permlink.'/img/'.$i.'.jpg',$body);
               }
             } else {
               $savefile = fopen($img_src, "w");
@@ -117,7 +117,7 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
                 echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
             }
           } else {
-            $body = str_replace($img_url,'./img/'.$i.'.jpg',$body);
+            $body = str_replace($img_url,$pathtsite.$permlink.'/img/'.$i.'.jpg',$body);
           }
         }
           return $body;
@@ -260,6 +260,7 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
     file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
     if ($modus == 3) {
       render_list($jsond);
+      //Renderfunktion PHP Schnellansicht als JSON oder HTML zum laden über GET oder POST.
     }
   }
   return $jsond;
