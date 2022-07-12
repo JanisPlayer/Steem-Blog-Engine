@@ -5,11 +5,15 @@ Javascript only Modus mit Steem_API oder Steemworld_API
 PHP und Javascript Modus, die Seiten werden mit Javascript zur Hälfte erstellt.  
 PHP only Modus, die Seiten werden zum Großteil nur mit PHP erstellt.  
 
+* Bugs: IMG Verzeichnis ist noch nicht an die URL oder Indexseite angepasst, wodurch die Bilder in der Schnellansicht nicht laden.
+
 Was fehlt 
 * Ein möglicher Temp-Speicher der Bilder, wenn das Urheberrecht es zuslässt die Bilder auf dem Server zu speichern.(Erledigt Naja)  -Vorschaubilder  -Artikel Bilder können auf dem Server gespeichert werden mit und ohne Kompression in einem img Ordner.
 * PHP only Modus mit https://parsedown.org/ . (Erledigt Naja)  
 * HTML: Vote-Funktion, Design, Darstellung von Bildern bei manchen Posts(Bug).  
 * PHP only Modus Seitenabschnitte generieren, die dann einfach aneinander geheftet werden und das passiert, wenn der nutzer am ende der Seite angelangt ist.  Für den Javasciprt Modus ist das natürlich dann auch benötigt.
+* PHP only Modus Schnellansicht über Get.
+* PHP loader PHP die die HTML auf Aktualität prüft oder über Javascript Post.
 
 Erledigt:
 * Ein Docker Script, welches es ermöglicht die Engine leicht zu eigenen Webseite hinzuzufügen. (Erledigt)  
