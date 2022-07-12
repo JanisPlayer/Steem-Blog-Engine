@@ -1,8 +1,27 @@
-FROM php:8.0.2-apache
-RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
+FROM debian:9
 
-# install imagick
-# Version is not officially released https://pecl.php.net/get/imagick but following works for PHP 8
-RUN mkdir -p /usr/src/php/ext/imagick; \
-    curl -fsSL https://github.com/Imagick/imagick/archive/06116aa24b76edaf6b1693198f79e6c295eda8a9.tar.gz | tar xvz -C "/usr/src/php/ext/imagick" --strip 1; \
-    docker-php-ext-install imagick;
+USER root
+
+# Get Debian up-to-date
+RUN apt-get update -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y git \
+    mariadb-client wget curl \
+    ca-certificates lsb-release apt-transport-https gnupg bsdmainutils
+
+
+RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee -a /etc/apt/sources.list.d/php.list
+RUN curl -L https://packages.sury.org/php/apt.gpg | apt-key add -
+
+RUN sudo apt-get install software-properties-common \ apt-get update \ add-apt-repository ppa:ondrej/php \ apt-get update -qq \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y php8.0 php8.0-common php8.0-cli php8.0-fpm \
+    php8.0-mysql  php8.0-curl php8.0-xml php8.0-mbstring \
+    php8.0-intl php8.0-redis php8.0-zip php8.0-sqlite \
+# How weird is this? Able to use Imagick when I haven't done a release for PHP 8 yet.
+    php8.0-imagick
+
+# Make the default directory you
+WORKDIR /var/app
+
+# Run the process that this container will serve
+
+CMD tail -f /var/app/docker/testing8_0/README.md

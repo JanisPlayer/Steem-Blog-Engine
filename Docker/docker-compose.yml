@@ -10,15 +10,25 @@ services:
   #  restart: always
 
 
-  testing8_0:
-    build: https://raw.githubusercontent.com/Imagick/imagick/master/docker/testing8_0/Dockerfile
+  #php_imagick:
+  #  #build: https://raw.githubusercontent.com/Imagick/imagick/master/docker/testing8_0/Dockerfile
+  #  build: https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/10f1dbb5321312940987a971c9611386a1a6c60d/Docker/Dockerfile
+  #  volumes:
+  #    - ./blog:/var/www/html/
+  #  cap_add:
+  #    - SYS_ADMIN
+  #    - SYS_PTRACE
+  #  security_opt:
+  #    - seccomp:unconfined
+  #  ports:
+  #    - 8000:80
+  #  restart: always
+
+  php-apache:
+    #build: https://raw.githubusercontent.com/Imagick/imagick/master/docker/testing8_0/Dockerfile
+    build: https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/634ace6d1f905f7a98efaed1abec69eadd80f576/Docker/Dockerfile
     volumes:
       - ./blog:/var/www/html/
-    cap_add:
-      - SYS_ADMIN
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
     ports:
       - 8000:80
     restart: always
