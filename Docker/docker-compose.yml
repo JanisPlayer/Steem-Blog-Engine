@@ -26,7 +26,7 @@ services:
 
   php-apache:
     #build: https://raw.githubusercontent.com/Imagick/imagick/master/docker/testing8_0/Dockerfile
-    build: https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/634ace6d1f905f7a98efaed1abec69eadd80f576/Docker/Dockerfile
+    build: https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/Docker/Dockerfile
     volumes:
       - ./blog:/var/www/html/
     ports:
