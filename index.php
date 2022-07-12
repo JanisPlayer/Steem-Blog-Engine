@@ -527,7 +527,7 @@ $pathtsite = './';
 if ($_SERVER['DOCUMENT_ROOT'] != getcwd()) {
   $pathtsitebugfix = '/'.basename(getcwd()).'/';
 } else {
-  $pathtsitebugfix = $pathtsite;
+  $pathtsitebugfix = '/';
 }
 
 $permlink = "";
