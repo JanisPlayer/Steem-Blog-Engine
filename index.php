@@ -528,7 +528,7 @@ $pathtsite = './';
 
 $permlink = "";
 
-$modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
+$modus = 3; //select 1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 /*if (isset($_GET['artikel'])) {
   gen_site($_GET['artikel'],true);
 }*/
