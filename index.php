@@ -403,6 +403,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         global $modus; //Ja das ist eigentlich echt nicht schön.
         if ($modus != 4) {
@@ -415,12 +416,15 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         global $modus; //Ja das ist eigentlich echt nicht schön.
         if ($modus != 4) {
 >>>>>>> parent of 06a4745 (Add files via upload)
+=======
+>>>>>>> 87cb625188c90b6530d8640a84c690f7b89aeccb
           $json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
           $jsond_getPost = json_decode($json_getPost, true);
 
           $data['getPost'] = $jsond_getPost;
 
           $data['body'] = $jsond_getPost["result"]["body"];
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -445,6 +449,11 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
 >>>>>>> parent of 06a4745 (Add files via upload)
 =======
 >>>>>>> parent of 06a4745 (Add files via upload)
+=======
+          $data['body']  = render_content_images($data['body'], $jsond_getPost["result"]["json_metadata"], $permlink, false);
+
+          $data['last_update'] = $jsond_getPost["result"]["last_update"];
+>>>>>>> 87cb625188c90b6530d8640a84c690f7b89aeccb
 
         //return $permlink;
         return $data;
