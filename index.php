@@ -70,6 +70,7 @@ function file_check(string $filename, int $sec) {
 
 function render_content_images(string $body, $json_metadata, string $permlink, $compress) { //array $compress aber mit geht das unsaubere unten nicht.
   global $pathtsite;
+  $pathtsitebugfix = '/'.basename(getcwd()).'/'; //Wird natürlich noch anders gelöst.
   $image = json_decode($json_metadata, true)["image"];
   $img_url = $image[0]; //Uncaught TypeError: Cannot access offset of type string on string 1h Stunde RIP nur weil ich Idiot $jsond genutzt habe.
   if (isset($image) && isset($img_url)) {
@@ -104,7 +105,7 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
                 $img->stripImage();
                 $img->writeImage($img_src);
                 //$img->clean();
-                $body = str_replace($img_url,$pathtsite.$permlink.'/img/'.$i.'.jpg',$body);
+                $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.jpg',$body);
               }
             } else {
               $savefile = fopen($img_src, "w");
@@ -117,7 +118,7 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
                 echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
             }
           } else {
-            $body = str_replace($img_url,$pathtsite.$permlink.'/img/'.$i.'.jpg',$body);
+            $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.jpg',$body);
           }
         }
           return $body;
