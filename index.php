@@ -68,6 +68,62 @@ function file_check(string $filename, int $sec) {
   return 0;
 }
 
+function render_content_images(string $body, $json_metadata, string $permlink, $compress) { //array $compress aber mit geht das unsaubere unten nicht.
+  global $pathtsite;
+  $image = json_decode($json_metadata, true)["image"];
+  $img_url = $image[0]; //Uncaught TypeError: Cannot access offset of type string on string 1h Stunde RIP nur weil ich Idiot $jsond genutzt habe.
+  if (isset($image) && isset($img_url)) {
+    for ($i=0; $i < count($image); $i++) { //json_decode($json_metadata, true)["image"] könnte man zwischenspeichern in Variable.
+        $img_url = $image[$i];
+        //if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
+        //Erstellt Vorschaubild zuerst nur für den PHP only Modus. Sollte vielleicht noch eine Funktion werden. https://stackoverflow.com/questions/10870129/compress-jpeg-on-server-with-php
+        $img_src = $permlink.'/img/';
+        //$filename = 'preview'.'.jpg'; bug wieso auch immer.
+
+        if (!file_exists($pathtsite.$permlink.'/')) {
+          mkdir($pathtsite.$permlink.'/'); //Ja ich sollte das auch anderes lösen. :D
+        }
+
+        if (!file_exists($img_src)) {
+          mkdir($img_src);
+        }
+
+        $img_src = $img_src.$i.'.jpg';
+        echo " ". $img_src;
+          if (!file_exists($img_src)) {
+            try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+              ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+              if ($compress !== false) { //sehr unsauber.
+                if (array_key_exists('x', $compress) && array_key_exists('y', $compress)) {
+                $img = new Imagick();
+                $img->readImage($img_url);
+                $img->scaleImage(compress['x'], compress['y'], true);
+                //$img->cropThumbnailImage(compress['x'], compress['y'], true);
+                $img->setImageCompression(Imagick::COMPRESSION_JPEG);
+                $img->setImageCompressionQuality(90);
+                $img->stripImage();
+                $img->writeImage($img_src);
+                //$img->clean();
+                $body = str_replace($img_url,'./img/'.$i.'.jpg',$body);
+              }
+            } else {
+              $savefile = fopen($img_src, "w");
+              fwrite($savefile, file_get_contents($img_url));
+              fclose($savefile);
+              $body = str_replace($img_url,'./img/'.$i.'.jpg',$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
+            }
+              ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+            } catch (Exception $e) {
+                echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+            }
+          }
+        }
+          return $body;
+    } else {
+      return $body;
+   }
+}
+
 function render_list ($jsond) {
   global $pathtsite;
 
@@ -87,8 +143,9 @@ function render_list ($jsond) {
       ;
 
       $json_metadata = read_api($i,"json_metadata", 0);
-      $img_url = json_decode($json_metadata, true)["image"][0]; //Uncaught TypeError: Cannot access offset of type string on string 1h Stunde RIP nur weil ich Idiot $jsond genutzt habe.
-      if (isset(json_decode($json_metadata, true)["image"]) && isset($img_url)) {
+      $image = json_decode($json_metadata, true)["image"];
+      $img_url = $image[0]; //Uncaught TypeError: Cannot access offset of type string on string 1h Stunde RIP nur weil ich Idiot $jsond genutzt habe.
+      if (isset($image) && isset($img_url)) {
       //if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
         //Erstellt Vorschaubild zuerst nur für den PHP only Modus. Sollte vielleicht noch eine Funktion werden. https://stackoverflow.com/questions/10870129/compress-jpeg-on-server-with-php
         $img_src = $pathtsite.$data['permlink'].'/img/';
@@ -197,6 +254,7 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
         'datum'=> time(),
         'inhalt'=> $json,
     ];
+
     file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
     if ($modus == 3) {
       render_list($jsond);
@@ -244,7 +302,7 @@ function strposa($haystack, $needles=array(), $offset=0) { //https://stackoverfl
         return min($chr);
 }
 
-function better_description(string $text)
+function remove_makedown(string $text)
 {
   //HTML Makedown Filter
   $text = str_replace(array("####### ", "###### ", "#### ", "### ", "## ", "# ","---","* ", "+ ", "- ", "= " , "`", "> "), "", $text);
@@ -332,7 +390,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $permlink = read_api($i,"permlink", 0);
         $data['title'] = read_api($i,"title", 1);
         //Muss verbessert werden.
-        $data['description'] = better_description(read_api($i,"body", 0));
+        $data['description'] = remove_makedown(read_api($i,"body", 0));
         $data['keywords'] = implode(", ", json_decode(read_api($i,"json_metadata", 0), true)["tags"]);
         $data['upvote_count'] = read_api($i,"upvote_count", 0);
         $data['downvote_count'] = read_api($i,"downvote_count", 0);
@@ -350,6 +408,10 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
           $data['getPost'] = $jsond_getPost;
 
           $data['body'] = $jsond_getPost["result"]["body"];
+
+          //Muss vielleicht auch wo anderes hin.
+          $data['body']  = render_content_images($data['body'], $jsond_getPost["result"]["json_metadata"], $permlink, false);
+
           $data['last_update'] = $jsond_getPost["result"]["last_update"];
         }
 
@@ -473,15 +535,15 @@ $modus = 3; //1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
 
-//ob_start(); //Debug
+ob_start(); //Debug
 
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
 } else {
   if (file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
-    //ob_end_clean(); //Debug
+    ob_end_clean(); //Debug
     include_once './artikel.html';
-    //ob_start(); //Debug
+    ob_start(); //Debug
   }
 
   if (file_check("PostsByAuthor.json", 300)) { //Sind die 5 Minuten abgelaufen?
@@ -492,7 +554,7 @@ if (isset($_GET['artikel'])) {
   }
 }
 
-//ob_end_clean(); //Debug
+ob_end_clean(); //Debug
 
 include_once './artikel.html'; //Muss vielleicht wo anders hin um den Dealy vom neugenerien nach 5 Min im PHP Modus zu verkleinern. Da es include_once ist sollte es selbst erkennen dass es oben schon eingebunden wurde.
 
