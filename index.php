@@ -69,13 +69,8 @@ function file_check(string $filename, int $sec) {
 }
 
 function render_content_images(string $body, $json_metadata, string $permlink, $compress) { //array $compress aber mit geht das unsaubere unten nicht.
-  global $pathtsite; //Wird natürlich noch anders gelöst.
-  if ($_SERVER['DOCUMENT_ROOT'] != getcwd()) {
-    $pathtsitebugfix = '/'.basename(getcwd()).'/';
-  } else {
-    $pathtsitebugfix = $pathtsite;
-  }
-
+  global $pathtsite;
+  global $pathtsitebugfix; //Wird natürlich noch anders gelöst.
   $image = json_decode($json_metadata, true)["image"];
   $img_url = $image[0]; //Uncaught TypeError: Cannot access offset of type string on string 1h Stunde RIP nur weil ich Idiot $jsond genutzt habe.
   if (isset($image) && isset($img_url)) {
@@ -529,6 +524,11 @@ $data =[
 $pathtemplate = './templates/';
 $pathtemplatename = './artikel.php';
 $pathtsite = './';
+if ($_SERVER['DOCUMENT_ROOT'] != getcwd()) {
+  $pathtsitebugfix = '/'.basename(getcwd()).'/';
+} else {
+  $pathtsitebugfix = $pathtsite;
+}
 
 $permlink = "";
 
