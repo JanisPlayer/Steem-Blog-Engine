@@ -16,12 +16,24 @@ function render(string $pathtemplate, string $pathtsite, string $filename, array
     }
 
     //Wird noch wo anderes hingemacht.
+  $image = json_decode($data["getPost"]["result"]["json_metadata"], true)["image"];
+  //$image = $data["getPost"]["result"]["json_metadata"]["image"];
+  $img_url = $image[0];
 
+  $img_src = $pathtsite.$data['permlink'].'/img/'.'preview'.'.jpg'; //Damit das funktioniert in der IF Abfrage muss erst die Basis geändert werden.
+  if (file_exists($img_src)  || (isset($image) && isset($img_url))) {
+      $data['img_src_preview'] = '<meta property="og:image" content="'.'./img/preview.jpg'.'"/>';
+  } else {
+    $data['img_src_preview'] = '';
+  }
+
+  //Wird noch wo anderes hingemacht.
   if ($modus == 3) {
     require_once 'Parsedown.php';
     $Parsedown = new Parsedown();
     $Parsedown->setSafeMode(true);
     $Parsedown->setMarkupEscaped(true);
+
     $data['body_parsedown'] = "<artikel>"
     .'<a href="'."https://steemit.com/".$data['category']."/@".$data['author']."/".$data['permlink'].'"><h1>'.$data['title']."</h1></a>"
     .$Parsedown->text($data['body'])
