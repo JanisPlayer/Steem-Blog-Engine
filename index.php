@@ -145,6 +145,9 @@ function render_list ($jsond) {
   global $modus; //Ja ich weiß das geht auch schöner.
   $modus = 4;
 
+  $scaley = 568;
+  $scalex = 340;
+
   require_once 'Parsedown.php';
   $Parsedown = new Parsedown();
   $Parsedown->setSafeMode(true);
@@ -155,7 +158,7 @@ function render_list ($jsond) {
       $renderdata['body_parsedown'] = $renderdata['body_parsedown']
       ."<artikel>"
       //.'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
-      .'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; overflow: hidden; display: inline-block; position: relative;"><picture>'
+      .'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; max-height: '.$scalex.'px; overflow: hidden; display: inline-block; position: relative;"><picture>'
       ;
 
       $json_metadata = read_api($i,"json_metadata", 0);
@@ -186,7 +189,7 @@ function render_list ($jsond) {
             $img->readImage($img_url);
             ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
             //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
-            $img->cropThumbnailImage(568, 340, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+            $img->cropThumbnailImage($scaley, $scalex, true); //Ist sonst zu stark verpixelt bei der Index Seite.
             $img->setImageCompression(Imagick::COMPRESSION_JPEG);
             $img->setImageCompressionQuality(90);
             $img->stripImage();
@@ -202,12 +205,12 @@ function render_list ($jsond) {
         .'<img src="'
         .$img_src
         //.'" style="width: 100%; height: 180px; object-fit: cover;">';
-        .'" style="width: 100%; object-fit: cover;">';
+        .'" style="width: 100%; max-height: '.$scalex.'px; object-fit: cover;">';
       } else {
         $renderdata['body_parsedown'] = $renderdata['body_parsedown']
         .'<img src="'
         ."404.jpg"
-        .'" style="width: 100%; height: 180px; object-fit: cover;">';
+        .'" style="width: 100%; max-height: '.$scalex.'px; object-fit: cover;">';
       }
 
       $renderdata['body_parsedown'] = $renderdata['body_parsedown']
