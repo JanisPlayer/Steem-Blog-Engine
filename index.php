@@ -154,7 +154,8 @@ function render_list ($jsond) {
       $data = gen_site_data(read_api($i,"permlink", 0));
       $renderdata['body_parsedown'] = $renderdata['body_parsedown']
       ."<artikel>"
-      .'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
+      //.'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
+      .'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; overflow: hidden; display: inline-block; position: relative;"><picture>'
       ;
 
       $json_metadata = read_api($i,"json_metadata", 0);
@@ -184,8 +185,8 @@ function render_list ($jsond) {
             ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
             $img->readImage($img_url);
             ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
-            //$img->scaleImage(284, 180, true); //Zu stark verpixelt bei der Index Seite.
-            $img->cropThumbnailImage(284, 180, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+            //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
+            $img->cropThumbnailImage(568, 340, true); //Ist sonst zu stark verpixelt bei der Index Seite.
             $img->setImageCompression(Imagick::COMPRESSION_JPEG);
             $img->setImageCompressionQuality(90);
             $img->stripImage();
@@ -200,7 +201,8 @@ function render_list ($jsond) {
         $renderdata['body_parsedown'] = $renderdata['body_parsedown']
         .'<img src="'
         .$img_src
-        .'" style="width: 100%; height: 180px; object-fit: cover;">';
+        //.'" style="width: 100%; height: 180px; object-fit: cover;">';
+        .'" style="width: 100%; object-fit: cover;">';
       } else {
         $renderdata['body_parsedown'] = $renderdata['body_parsedown']
         .'<img src="'
