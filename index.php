@@ -561,8 +561,9 @@ ob_start(); //Debug
 if (isset($_GET['artikel'])) {
     gen_site($_GET['artikel'],true);
 } else {
-  if (file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
+  if (!file_exists('./artikel.html')) { //Verkürzt Ladezeit bei neu generierung der Seite.
     ob_end_clean(); //Debug
+    //header('Location: ./', true, 302); //fix long load but is bad.
     include_once './artikel.html';
     ob_start(); //Debug
   }
