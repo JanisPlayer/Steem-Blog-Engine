@@ -8,6 +8,8 @@
 
   <meta name="description" content="<?=$description?>">
 
+  <?=$img_src_preview?>
+
   <meta name="keywords" content="minecraft, rlcraft, gameserver, server, teamspeak, discord, meet, voiceserver, steem, <?=$keywords?> ">
 
   <meta name="author" content="Janis">
@@ -198,14 +200,40 @@
   <!-- End Google Tag Manager -->
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5350651163680266" crossorigin="anonymous"></script>
+
+  <script>
+    addEventListener('DOMContentLoaded', (event) => {
+      document.getElementById('suche_summit').addEventListener('click', suche);
+
+      document.getElementById('suche_input').onkeydown = function(e) {
+        if (e.keyCode == 13) {
+          suche();
+        }
+      };
+    });
+
+    function suche() {
+      var suche_text = document.getElementById('suche_input').value
+      document.getElementById('suche_input').value = "";
+      document.location = ("https://cse.google.com/cse?cx=7718be5d5ddc85d34&q=" + suche_text);
+    }
+  </script>
+
+</head>
+
+<body>
   <div class="head">
     <img src="/img/logo.png" alt="Logo von @Zauberah erstellt." style="width:64px;height:51px;">
     <a href="../">Helden des Bildschirms</a>
   </div>
 
-</head>
+  <div class="over_nav">
+    <a href="../">Zurück</a>
 
-<body>
+    <div class="suchen" style="float:right">
+      <input type="text" value="" id="suche_input" class="suche"><button id="suche_summit" class="suche">suchen</button>
+    </div>
+  </div>
   <content_box>
 
     <div class="content_read" id ="content_read" >
@@ -230,7 +258,7 @@
   <text>
     <ul>
       <!-- <li>&copy; 2019 Helden des Bildschirms</li> -->
-      <li><a href="mailto:heldendesbildschirms@gmail.com">Kontakt</a></li>
+      <li><a href="mailto:support@heldendesbildschirms.de">Kontakt</a></li>
       <li><a href="/datenschutz.html">Datenschutz</a></li>
       <li><a href="/impressum.html">Impressum</a></li>
     </ul>

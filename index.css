@@ -1,4 +1,4 @@
-body {
+ {
   margin: 0px;
   font-family: arial;
   background: #f1f1f1;
@@ -44,7 +44,7 @@ body {
   }
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 1050px) {
   .content {
     padding-left: 25%;
     padding-right: 25%;
@@ -60,12 +60,55 @@ body {
     border-left: 25%;
     border-right: 25%;
   }
+}
 
-  #twitch-embed iframe {
-    //margin-top: 10px;
-    width: 100%;
-    height: 100%;
+@media only screen and (max-width: 1050px) {
+  .suche {
+      width: 50%;
+      visibility: hidden;
   }
+}
+
+.over_nav {
+  height: 47px;
+}
+
+.over_nav a{
+  display: inline-block;
+  float:left;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 16px;
+  background-color: rgba(120, 120, 248, 1.0);
+  color: rgba(0, 0, 255, 1.0);
+  transition: ease-in all 300ms;
+}
+
+.over_nav a:hover  {
+  text-decoration: none;
+  color: #FFFFFF;
+  background-color: rgba(0, 0, 255, 0.7);
+  transform: translate(0px,-1px);
+  box-shadow: 0px 15px 10px -2px rgba(0, 0, 255, 1.0);
+}
+
+.suche {
+  border: none;
+  outline: none;
+  font-family: arial;
+  font-size: 16px;
+  margin: 0;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 16px;
+  background-color: rgba(120, 120, 248, 1.0);
+  color: rgba(0, 0, 255, 1.0);
+  transition: ease-in all 300ms;
+}
+
+#suche_input {
+  width: calc(100% - 84px);
 }
 
 .content {
@@ -237,7 +280,7 @@ s .scroller {
   height: 100vh;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1150px) {
   body {
     //background-color: darkblue;
   }

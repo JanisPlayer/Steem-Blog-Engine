@@ -6,7 +6,7 @@
 
   <meta charset="utf-8">
 
-  <meta name="description" content="Helden des Bildschirms bittet dir Gameserver und Voiceserver, Minecraft, Mods, TeamSpeak, Discord, Meet.">
+  <meta name="description" content="Helden des Bildschirms bietet dir Gameserver und Voiceserver, Minecraft, Mods, TeamSpeak, Discord, Meet.">
 
   <meta name="keywords" content="minecraft, rlcraft, gameserver, server, teamspeak, discord, meet, voiceserver, steem">
 
@@ -315,6 +315,24 @@
 
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5350651163680266" crossorigin="anonymous"></script>
 
+  <script>
+    addEventListener('DOMContentLoaded', (event) => {
+      document.getElementById('suche_summit').addEventListener('click', suche);
+
+      document.getElementById('suche_input').onkeydown = function(e) {
+        if (e.keyCode == 13) {
+          suche();
+        }
+      };
+    });
+
+    function suche() {
+      var suche_text = document.getElementById('suche_input').value
+      document.getElementById('suche_input').value = "";
+      document.location = ("https://cse.google.com/cse?cx=7718be5d5ddc85d34&q=" + suche_text);
+    }
+  </script>
+
 </head>
 
 <body>
@@ -322,6 +340,14 @@
   <div class="head">
     <img src="/img/logo.png" alt="Logo von @Zauberah erstellt." style="width:64px;height:51px;">
     <a href="/">Helden des Bildschirms</a>
+  </div>
+
+  <div class="over_nav">
+    <a href="/">Home</a>
+
+    <div class="suchen" style="float:right">
+      <input type="text" value="" id="suche_input" class="suche"><button id="suche_summit" class="suche">suchen</button>
+    </div>
   </div>
 
   <content_box>
@@ -347,7 +373,7 @@
   <text>
     <ul>
       <!-- <li>&copy; 2019 Helden des Bildschirms</li> -->
-      <li><a href="mailto:heldendesbildschirms@gmail.com">Kontakt</a></li>
+      <li><a href="mailto:support@heldendesbildschirms.de">Kontakt</a></li>
       <li><a href="/datenschutz.html">Datenschutz</a></li>
       <li><a href="/impressum.html">Impressum</a></li>
     </ul>
