@@ -27,3 +27,10 @@ Name eintragen, Modus wählen und Docker Container starten.
 Die Beispielseiten können einfach angepasst und ausgetauscht werden.  
 Da das Projekt sich noch sehr stark verändern wird, sollte es aber wirklich nur als Demo betrachtet werden.  
 Ihr könnt dieses Projekt als Vorlage nutzen und natürlich verbessern.  
+
+Wird es einen Hive Support geben?
+Ja, eine ausführliche Erklärung wie und wann findet ihr hier:
+https://hive.blog/deutsch/@janisplayer/riw3hf
+
+Wird es eine Post Funktion geben?
+Das weiß ich noch nicht, ich denke, ich werde eine bauen und wenn für beide Plattformen, vielleicht auch eine Multipost Funktion, damit beide Blockchains Synchron sind.
