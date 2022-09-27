@@ -33,4 +33,4 @@ Ja, eine ausführliche Erklärung wie und wann findet ihr hier:
 https://hive.blog/deutsch/@janisplayer/riw3hf  
 
 Wird es eine Post Funktion geben?  
-Das weiß ich noch nicht, ich denke, ich werde eine bauen und wenn für beide Plattformen, vielleicht auch eine Multipost Funktion, damit beide Blockchains Synchron sind.  
+Das weiß ich noch nicht, ich denke, ich werde eine bauen und wenn für beide Plattformen, vielleicht auch eine Multipost Funktion, damit beide Blockchains synchron sind.  
