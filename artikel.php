@@ -75,10 +75,6 @@
       });
     }
 
-    function nl2br(str) {
-      return str.replace(/(\n)/g, '<br>');
-    }
-
     function createArtikelContent(author, permlink) {
       const br = document.createElement("br");
       const imgcontainer = document.createElement("imgcontainer");
@@ -103,8 +99,10 @@
         }
         title.innerHTML = "<h1>" + result["title"];
         title.href = "https://steemit.com" + result["url"];
-        //content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(result["body"])));
-        content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(result["body"])));
+        marked.setOptions({
+          breaks: true,
+        });
+        content_text.innerHTML = DOMPurify.sanitize(marked.parse(result["body"]));
         date.innerText = result["created"];
         //button.innerText = "Vote: wird noch erstellt. Ich hatte wegen den Partnern zu wenig Zeit."
         //button.setAttribute = "ArtikelVote(" + author + "," + permlink + ")"
@@ -145,7 +143,9 @@
 
         title.innerHTML = "<h1>" + JSON.parse(jf.response).title;
         title.href = "https://steemit.com" + "/" + JSON.parse(jf.response).category + "/@" + JSON.parse(jf.response).author + "/" +permlink;
-        //content_text.innerHTML = DOMPurify.sanitize(nl2br(marked.parse(JSON.parse(jf.response).body)));
+        marked.setOptions({
+          breaks: true,
+        });
         content_text.innerHTML = DOMPurify.sanitize(marked.parse(JSON.parse(jf.response).body));
 
         date.innerText = new Date(JSON.parse(jf.response).datum * 1000);
