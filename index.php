@@ -33,6 +33,7 @@ function render(string $pathtemplate, string $pathtsite, string $filename, array
     $Parsedown = new Parsedown();
     $Parsedown->setSafeMode(true);
     $Parsedown->setMarkupEscaped(true);
+    $Parsedown->setBreaksEnabled(true);
 
     $data['body_parsedown'] = "<artikel>"
     .'<a href="'."https://steemit.com/".$data['category']."/@".$data['author']."/".$data['permlink'].'"><h1>'.$data['title']."</h1></a>"
