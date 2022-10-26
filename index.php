@@ -22,7 +22,7 @@ function render(string $pathtemplate, string $pathtsite, string $filename, array
 
   $img_src = $pathtsite.$data['permlink'].'/img/'.'preview'.'.webp'; //Damit das funktioniert in der IF Abfrage muss erst die Basis geändert werden.
   if (file_exists($img_src)  || (isset($image) && isset($img_url))) {
-      $data['img_src_preview'] = '<meta property="og:image" content="'.'./img/preview.jpg'.'"/>';
+      $data['img_src_preview'] = '<meta property="og:image" content="'.'./img/preview.webp'.'"/>';
   } else {
     $data['img_src_preview'] = '';
   }
@@ -102,36 +102,78 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
           mkdir($img_src);
         }
 
-        $img_src = $img_src.$i.'.jpg';
+        $trusted_format = array("jpg", "jpeg", "webp", "png", "gif", "bmp", "tif", "heif", "flif");
+
+        $img_url_format = strtolower(substr($img_url,strlen($img_url)-4,4));
+        $img_url_format_found = false;
+
+        for ($ai=0; $ai < count($trusted_format); $ai++) {//ups ich weiß wieso es eine dauer schleife gegeben hat. i geht nicht ist ja schon oben.
+          if (strpos($img_url_format, $trusted_format[$ai]) !==  false) {
+            $img_url_format = $trusted_format[$ai];
+            $img_url_format_found = true;
+            break;
+          } // else {
+            // if ($i == count($trusted_format)) { //kann man besser lösen mit einer $img_url_format_temp.
+            //   $img_url_format = false;
+            // }
+          // }
+        }
+
+        // if ($img_url_format == false) {
+        if ($img_url_format_found == false) {
+          $img_url_format = "webp";
+        }
+        $img_src_compress = $img_src.$i.'.webp'; //Ja das sollte man auch anderes machen.
+        $img_src = $img_src.$i.'.'.$img_url_format;
+
         echo " ". $img_src;
           if (!file_exists($img_src)) {
             try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
               ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
               if ($compress !== false) { //sehr unsauber.
-                if (array_key_exists('x', $compress) && array_key_exists('y', $compress)) {
-                $img = new Imagick();
-                $img->readImage($img_url);
-                $img->scaleImage(compress['x'], compress['y'], true);
-                //$img->cropThumbnailImage(compress['x'], compress['y'], true);
-                $img->setImageCompression(Imagick::COMPRESSION_JPEG);
-                $img->setImageCompressionQuality(90);
-                $img->stripImage();
-                $img->writeImage($img_src);
+                  $savefile = fopen($img_src, "w");
+                  $file_temp = file_get_contents($img_url);
+                  fwrite($savefile, $file_temp);
+                  fclose($savefile);
+
+                  if (!file_exists($img_src_compress)) {
+                  $img = new Imagick();
+                  $img->readImageBlob($file_temp);
+                  unset($file_temp);
+                  // if (array_key_exists('x', $compress) && array_key_exists('y', $compress)) {
+                  //   $img->scaleImage(compress['x'], compress['y'], true);
+                  // }
+                  //$img->cropThumbnailImage(compress['x'], compress['y'], true);
+                  //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+                  $img->setImageFormat('webp');
+                  // if ("gif" == $img_url_format) {
+                  //   $profileImg->setImageCompressionQuality(100);
+                  //   $profileImg->setOption('webp:lossless', 'true');
+                  // } else {
+                  //   $img->setImageCompressionQuality(90);
+                  // }
+                  $img->stripImage();
+                  $img->writeImage($img_src_compress);
+                }
                 //$img->clean();
-                $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.jpg',$body);
-              }
+                $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
             } else {
               $savefile = fopen($img_src, "w");
               fwrite($savefile, file_get_contents($img_url));
               fclose($savefile);
-              $body = str_replace($img_url,'./img/'.$i.'.jpg',$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
+              $body = str_replace($img_url,'./img/'.$i.'.'.$img_url_format,$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
             }
               ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
             } catch (Exception $e) {
                 echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
             }
           } else {
-            $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.jpg',$body);
+            //if (!file_exists($pathtsitebugfix.$permlink.'/img/'.$i.'.webp')) {
+            if (!$compress !== false || "gif" == $img_url_format) {
+              $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.'.$img_url_format,$body);
+            } else {
+              $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
+            }
           }
         }
           return $body;
@@ -198,7 +240,7 @@ function render_list ($jsond) {
             $img->writeImage($img_src);
             //$img->clean();
           } catch (Exception $e) {
-              $img_src = "404.jpg";
+              $img_src = "404.webp";
               echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
           }
         }
@@ -211,7 +253,7 @@ function render_list ($jsond) {
       } else {
         $renderdata['body_parsedown'] = $renderdata['body_parsedown']
         .'<img src="'
-        ."404.jpg"
+        ."404.webp"
         .'" style="width: 100%; max-height: '.$scalex.'px; object-fit: cover;">';
       }
 
@@ -429,7 +471,7 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
           $data['getPost'] = $jsond_getPost;
 
           $data['body'] = $jsond_getPost["result"]["body"];
-          $data['body']  = render_content_images($data['body'], $jsond_getPost["result"]["json_metadata"], $permlink, false);
+          $data['body']  = render_content_images($data['body'], $jsond_getPost["result"]["json_metadata"], $permlink, true);
 
           $data['last_update'] = $jsond_getPost["result"]["last_update"];
 
