@@ -20,7 +20,7 @@ function render(string $pathtemplate, string $pathtsite, string $filename, array
   //$image = $data["getPost"]["result"]["json_metadata"]["image"];
   $img_url = $image[0];
 
-  $img_src = $pathtsite.$data['permlink'].'/img/'.'preview'.'.jpg'; //Damit das funktioniert in der IF Abfrage muss erst die Basis geändert werden.
+  $img_src = $pathtsite.$data['permlink'].'/img/'.'preview'.'.webp'; //Damit das funktioniert in der IF Abfrage muss erst die Basis geändert werden.
   if (file_exists($img_src)  || (isset($image) && isset($img_url))) {
       $data['img_src_preview'] = '<meta property="og:image" content="'.'./img/preview.jpg'.'"/>';
   } else {
@@ -92,7 +92,7 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
         //if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
         //Erstellt Vorschaubild zuerst nur für den PHP only Modus. Sollte vielleicht noch eine Funktion werden. https://stackoverflow.com/questions/10870129/compress-jpeg-on-server-with-php
         $img_src = $permlink.'/img/';
-        //$filename = 'preview'.'.jpg'; bug wieso auch immer.
+        //$filename = 'preview'.'.webp'; bug wieso auch immer.
 
         if (!file_exists($pathtsite.$permlink.'/')) {
           mkdir($pathtsite.$permlink.'/'); //Ja ich sollte das auch anderes lösen. :D
@@ -169,7 +169,7 @@ function render_list ($jsond) {
       //if (isset(json_decode(read_api($i,"json_metadata", 0), true)["image"]) && isset(json_decode(read_api($i,"json_metadata", 0), true)["image"][0])) {
         //Erstellt Vorschaubild zuerst nur für den PHP only Modus. Sollte vielleicht noch eine Funktion werden. https://stackoverflow.com/questions/10870129/compress-jpeg-on-server-with-php
         $img_src = $pathtsite.$data['permlink'].'/img/';
-        //$filename = 'preview'.'.jpg'; bug wieso auch immer.
+        //$filename = 'preview'.'.webp'; bug wieso auch immer.
 
         if (!file_exists($pathtsite.$data['permlink'])) {
           $modus = 3; //Das auf alle fälle, aber ich mache das wann Anderes.
@@ -181,7 +181,7 @@ function render_list ($jsond) {
           mkdir($img_src);
         }
 
-        $img_src = $img_src.'preview'.'.jpg';
+        $img_src = $img_src.'preview'.'.webp';
         echo " ". $img_src;
         if (!file_exists($img_src)) {
           try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
@@ -191,7 +191,8 @@ function render_list ($jsond) {
             ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
             //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
             $img->cropThumbnailImage($scaley, $scalex, true); //Ist sonst zu stark verpixelt bei der Index Seite.
-            $img->setImageCompression(Imagick::COMPRESSION_JPEG);
+            //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+            $img->setImageFormat('webp');
             $img->setImageCompressionQuality(90);
             $img->stripImage();
             $img->writeImage($img_src);
