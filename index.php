@@ -4,6 +4,7 @@ ini_set('display_errors', 'On');
 
 function render(string $pathtemplate, string $pathtsite, string $filename, array $data){
   global $modus;
+  global $domain_path;
     if (!file_exists($pathtsite)) {
         if (!mkdir($pathtsite, 0700, true)) {
           die('Erstellung der Verzeichnisse schlug fehl...');
@@ -20,9 +21,10 @@ function render(string $pathtemplate, string $pathtsite, string $filename, array
   //$image = $data["getPost"]["result"]["json_metadata"]["image"];
   $img_url = $image[0];
 
-  $img_src = $pathtsite.$data['permlink'].'/img/'.'preview'.'.webp'; //Damit das funktioniert in der IF Abfrage muss erst die Basis geändert werden.
+  $img_src = $pathtsite.$data['permlink'].'/img/'.'preview_og:image.jpg'; //Damit das funktioniert in der IF Abfrage muss erst die Basis geändert werden.
   if (file_exists($img_src)  || (isset($image) && isset($img_url))) {
-      $data['img_src_preview'] = '<meta property="og:image" content="'.'./img/preview.webp'.'"/>';
+    //$data['img_src_preview'] = '<meta property="og:image" content="'.'./img/preview_og:image.jpg'.'"/>';
+    $data['img_src_preview'] = '<meta property="og:image" content="'.$domain_path.$data['permlink'].'/img/preview_og:image.jpg'.'"/>';
   } else {
     $data['img_src_preview'] = '';
   }
@@ -240,6 +242,7 @@ function render_list ($jsond) {
           mkdir($img_src);
         }
 
+        $img_src_og_image = $img_src.'preview_og:image.jpg';
         $img_src = $img_src.'preview'.'.webp';
         echo " ". $img_src;
         if (!file_exists($img_src)) {
@@ -258,6 +261,26 @@ function render_list ($jsond) {
             //$img->clean();
           } catch (Exception $e) {
               $img_src = "404.webp";
+              echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+          }
+        }
+
+        if (!file_exists($img_src_og_image)) {
+          try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+            $img = new Imagick();
+            ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+            $img->readImage($img_url);
+            ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+            //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
+            $img->cropThumbnailImage(300, 200, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+            //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+            $img->setImageFormat('webp');
+            $img->setImageCompressionQuality(90);
+            $img->stripImage();
+            $img->writeImage($img_src_og_image);
+            //$img->clean();
+          } catch (Exception $e) {
+              $img_src_og_image = "404.jpg";
               echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
           }
         }
@@ -607,6 +630,7 @@ if ($_SERVER['DOCUMENT_ROOT'] != getcwd()) {
 } else {
   $pathtsitebugfix = '/';
 }
+$domain_path = "https://heldendesbildschirms.de/artikel/";
 
 $permlink = "";
 
