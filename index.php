@@ -104,7 +104,7 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
           mkdir($img_src);
         }
 
-        $trusted_format = array("jpg", "jpeg", "webp", "png", "gif", "bmp", "tif", "heif", "flif");
+        $trusted_format = array("jpg", "jpeg", "webp", "png", "gif", "bmp", "tif", "heif", "flif", "avif");
 
         $img_url_format = strtolower(substr($img_url,strlen($img_url)-4,4));
         $img_url_format_found = false;
@@ -125,66 +125,111 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
         if ($img_url_format_found == false) {
           $img_url_format = "webp";
         }
+        $img_src_avif = $img_src.$i.'.avif';
         $img_src_compress = $img_src.$i.'.webp'; //Ja das sollte man auch anderes machen.
         $img_src = $img_src.$i.'.'.$img_url_format;
 
         echo " ". $img_src;
-          if (!file_exists($img_src)) {
-            try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
-              ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
-              if ($compress !== false) { //sehr unsauber.
-                  $savefile = fopen($img_src, "w");
-                  $file_temp = file_get_contents($img_url);
-                  fwrite($savefile, $file_temp);
-                  fclose($savefile);
+          if (!file_exists($img_src) || !file_exists($img_src_avif)) {
+            if (!file_exists($img_src)) {
+              try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+                ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+                if ($compress !== false) { //sehr unsauber.
+                    $savefile = fopen($img_src, "w");
+                    $file_temp = file_get_contents($img_url);
+                    fwrite($savefile, $file_temp);
+                    fclose($savefile);
 
-                  if (!file_exists($img_src_compress)) {
-                  $img = new Imagick();
-                  $img->readImageBlob($file_temp);
-                  unset($file_temp);
-                  // if (array_key_exists('x', $compress) && array_key_exists('y', $compress)) {
-                  //   $img->scaleImage(compress['x'], compress['y'], true);
-                  // }
-                  //$img->cropThumbnailImage(compress['x'], compress['y'], true);
-                  //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-                  $img->setImageFormat('webp');
-                  // if ("gif" == $img_url_format) {
-                  //   $profileImg->setImageCompressionQuality(100);
-                  //   $profileImg->setOption('webp:lossless', 'true');
-                  // } else {
-                  //   $img->setImageCompressionQuality(90);
-                  // }
-                  $orientation = $img->getImageOrientation();
-                  if (!empty($orientation)) {
-                      switch ($orientation) {
-                          case imagick::ORIENTATION_BOTTOMRIGHT:
-                              $img->rotateimage("#000", 180);
-                              break;
+                    if (!file_exists($img_src_compress)) {
+                    $img = new Imagick();
+                    $img->readImageBlob($file_temp);
+                    // if (array_key_exists('x', $compress) && array_key_exists('y', $compress)) {
+                    //   $img->scaleImage(compress['x'], compress['y'], true);
+                    // }
+                    //$img->cropThumbnailImage(compress['x'], compress['y'], true);
+                    //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+                    $img->setImageFormat('webp');
+                    // if ("gif" == $img_url_format) {
+                    //   $profileImg->setImageCompressionQuality(100);
+                    //   $profileImg->setOption('webp:lossless', 'true');
+                    // } else {
+                    //   $img->setImageCompressionQuality(90);
+                    // }
+                    $orientation = $img->getImageOrientation();
+                    if (!empty($orientation)) {
+                        switch ($orientation) {
+                            case imagick::ORIENTATION_BOTTOMRIGHT:
+                                $img->rotateimage("#000", 180);
+                                break;
 
-                          case imagick::ORIENTATION_RIGHTTOP:
-                              $img->rotateimage("#000", 90);
-                              break;
+                            case imagick::ORIENTATION_RIGHTTOP:
+                                $img->rotateimage("#000", 90);
+                                break;
 
-                          case imagick::ORIENTATION_LEFTBOTTOM:
-                              $img->rotateimage("#000", -90);
-                              break;
-                      }
+                            case imagick::ORIENTATION_LEFTBOTTOM:
+                                $img->rotateimage("#000", -90);
+                                break;
+                        }
+                    }
+                    $img->setImageOrientation(imagick::ORIENTATION_TOPLEFT);
+                    $img->stripImage();
+                    $img->writeImage($img_src_compress);
                   }
-                  $img->setImageOrientation(imagick::ORIENTATION_TOPLEFT);
-                  $img->stripImage();
-                  $img->writeImage($img_src_compress);
-                }
-                //$img->clean();
-                $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
-            } else {
-              $savefile = fopen($img_src, "w");
-              fwrite($savefile, file_get_contents($img_url));
-              fclose($savefile);
-              $body = str_replace($img_url,'./img/'.$i.'.'.$img_url_format,$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
+                  //$img->clean();
+                  $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
+              } else {
+                $savefile = fopen($img_src, "w");
+                fwrite($savefile, file_get_contents($img_url));
+                fclose($savefile);
+                $body = str_replace($img_url,'./img/'.$i.'.'.$img_url_format,$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
+              }
+                ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+              } catch (Exception $e) {
+                  echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+              }
             }
-              ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
-            } catch (Exception $e) {
-                echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+
+            if (!file_exists($img_src_avif)) {
+              try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+                ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+                if ($compress !== false) { //sehr unsauber.
+                    if (!file_exists($img_src_avif)) {
+                    $img = new Imagick();
+                    $img->readImageBlob($file_temp);
+                    $img->setImageFormat('avif');
+                    $img->setCompressionQuality(90);
+                    if (!empty($orientation)) {
+                        switch ($orientation) {
+                            case imagick::ORIENTATION_BOTTOMRIGHT:
+                                $img->rotateimage("#000", 180);
+                                break;
+
+                            case imagick::ORIENTATION_RIGHTTOP:
+                                $img->rotateimage("#000", 90);
+                                break;
+
+                            case imagick::ORIENTATION_LEFTBOTTOM:
+                                $img->rotateimage("#000", -90);
+                                break;
+                        }
+                    }
+                    $img->setImageOrientation(imagick::ORIENTATION_TOPLEFT);
+                    $img->stripImage();
+                    $img->writeImage($img_src_avif);
+                  }
+                  //$img->clean();
+                  $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
+                  unset($file_temp);
+              } else {
+                $savefile = fopen($img_src, "w");
+                fwrite($savefile, file_get_contents($img_url));
+                fclose($savefile);
+                $body = str_replace($img_url,'./img/'.$i.'.'.$img_url_format,$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
+              }
+                ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+              } catch (Exception $e) {
+                  echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+              }
             }
           } else {
             //if (!file_exists($pathtsitebugfix.$permlink.'/img/'.$i.'.webp')) {
@@ -243,46 +288,71 @@ function render_list ($jsond) {
         }
 
         $img_src_og_image = $img_src.'preview_og:image.jpg';
+        $img_src_avif = $img_src.'preview'.'.avif';
         $img_src = $img_src.'preview'.'.webp';
         echo " ". $img_src;
-        if (!file_exists($img_src)) {
-          try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
-            $img = new Imagick();
-            ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
-            $img->readImage($img_url);
-            ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
-            //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
-            $img->cropThumbnailImage($scaley, $scalex, true); //Ist sonst zu stark verpixelt bei der Index Seite.
-            //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-            $img->setImageFormat('webp');
-            $img->setImageCompressionQuality(90);
-            $img->stripImage();
-            $img->writeImage($img_src);
-            //$img->clean();
-          } catch (Exception $e) {
-              $img_src = "404.webp";
-              echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+        if (!file_exists($img_src) || !file_exists($img_src_avif) || !file_exists($img_src_og_image)) {
+          $file_temp = file_get_contents($img_url);
+          if (!file_exists($img_src)) {
+            try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+              $img = new Imagick();
+              ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+              $img->readImageBlob($file_temp);
+              ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+              //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
+              $img->cropThumbnailImage($scaley, $scalex, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+              //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+              $img->setImageFormat('webp');
+              $img->setImageCompressionQuality(90);
+              $img->stripImage();
+              $img->writeImage($img_src);
+              //$img->clean();
+            } catch (Exception $e) {
+                $img_src = "404.webp";
+                echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+            }
           }
-        }
 
-        if (!file_exists($img_src_og_image)) {
-          try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
-            $img = new Imagick();
-            ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
-            $img->readImage($img_url);
-            ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
-            //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
-            $img->cropThumbnailImage(300, 200, true); //Ist sonst zu stark verpixelt bei der Index Seite.
-            //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
-            $img->setImageFormat('webp');
-            $img->setImageCompressionQuality(90);
-            $img->stripImage();
-            $img->writeImage($img_src_og_image);
-            //$img->clean();
-          } catch (Exception $e) {
-              $img_src_og_image = "404.jpg";
-              echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+          if (!file_exists($img_src_avif)) {
+            try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+              $img = new Imagick();
+              ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+              $img->readImageBlob($file_temp);
+              ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+              //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
+              $img->cropThumbnailImage($scaley, $scalex, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+              //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+              $img->setImageFormat('avif');
+              $img->setCompressionQuality(90);
+              $img->stripImage();
+              $img->writeImage($img_src_avif);
+              //$img->clean();
+            } catch (Exception $e) {
+                $img_src = "404.webp";
+                echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+            }
           }
+
+          if (!file_exists($img_src_og_image)) {
+            try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
+              $img = new Imagick();
+              ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
+              $img->readImageBlob($file_temp);
+              ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+              //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
+              $img->cropThumbnailImage(300, 200, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+              //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
+              $img->setImageFormat('webp');
+              $img->setImageCompressionQuality(90);
+              $img->stripImage();
+              $img->writeImage($img_src_og_image);
+              //$img->clean();
+            } catch (Exception $e) {
+                $img_src_og_image = "404.jpg";
+                echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+            }
+          }
+          unset($file_temp);
         }
 
         $renderdata['body_parsedown'] = $renderdata['body_parsedown']
