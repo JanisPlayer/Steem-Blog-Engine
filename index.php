@@ -152,6 +152,23 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
                   // } else {
                   //   $img->setImageCompressionQuality(90);
                   // }
+                  $orientation = $img->getImageOrientation();
+                  if (!empty($orientation)) {
+                      switch ($orientation) {
+                          case imagick::ORIENTATION_BOTTOMRIGHT:
+                              $img->rotateimage("#000", 180);
+                              break;
+
+                          case imagick::ORIENTATION_RIGHTTOP:
+                              $img->rotateimage("#000", 90);
+                              break;
+
+                          case imagick::ORIENTATION_LEFTBOTTOM:
+                              $img->rotateimage("#000", -90);
+                              break;
+                      }
+                  }
+                  $img->setImageOrientation(imagick::ORIENTATION_TOPLEFT);
                   $img->stripImage();
                   $img->writeImage($img_src_compress);
                 }
