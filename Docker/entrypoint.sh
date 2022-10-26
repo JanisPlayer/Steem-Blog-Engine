@@ -10,6 +10,7 @@ wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/artik
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/index.php"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/index.css"
 wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/404.jpg"
+wget "https://raw.githubusercontent.com/JanisPlayer/Steem-Blog-Engine/main/404.webp"
 wget "https://raw.githubusercontent.com/cure53/DOMPurify/main/dist/purify.min.js"
 wget "https://raw.githubusercontent.com/erusev/parsedown/master/Parsedown.php"
 cp index.css ./templates/index.css
