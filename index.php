@@ -25,6 +25,7 @@ function render(string $pathtemplate, string $pathtsite, string $filename, array
   if (file_exists($img_src)  || (isset($image) && isset($img_url))) {
     //$data['img_src_preview'] = '<meta property="og:image" content="'.'./img/preview_og:image.jpg'.'"/>';
     $data['img_src_preview'] = '<meta property="og:image" content="'.$domain_path.$data['permlink'].'/img/preview_og:image.jpg'.'"/>';
+    $data['img_src_preview_2'] = '<meta property="og:image" content="'.$domain_path.$data['permlink'].'/img/preview.webp'.'"/>';
   } else {
     $data['img_src_preview'] = '';
   }
@@ -130,15 +131,21 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
         $img_src = $img_src.$i.'.'.$img_url_format;
 
         echo " ". $img_src;
-          if (!file_exists($img_src) || !file_exists($img_src_avif)) {
+          if (!file_exists($img_src) || $img_src_compress || !file_exists($img_src_avif)) {
+
+            $file_temp = file_get_contents($img_url);
+
             if (!file_exists($img_src)) {
+            $savefile = fopen($img_src, "w");
+            fwrite($savefile, $file_temp);
+            fclose($savefile);
+            }
+
+            if ($compress !== false) { //sehr unsauber.
               try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
                 ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
-                if ($compress !== false) { //sehr unsauber.
-                    $savefile = fopen($img_src, "w");
-                    $file_temp = file_get_contents($img_url);
-                    fwrite($savefile, $file_temp);
-                    fclose($savefile);
+
+                // if ($compress !== false) { //sehr unsauber.
 
                     if (!file_exists($img_src_compress)) {
                     $img = new Imagick();
@@ -177,27 +184,20 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
                   }
                   //$img->clean();
                   $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
-              } else {
-                $savefile = fopen($img_src, "w");
-                fwrite($savefile, file_get_contents($img_url));
-                fclose($savefile);
-                $body = str_replace($img_url,'./img/'.$i.'.'.$img_url_format,$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
-              }
                 ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
               } catch (Exception $e) {
                   echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
               }
-            }
 
             if (!file_exists($img_src_avif)) {
               try { //Geht warscheinlich besser, aber mir fällt nichts besseres ein.
                 ini_set("default_socket_timeout", 2); //get_headers wäre noch eine Möglichkeit das zu verbessern.
-                if ($compress !== false) { //sehr unsauber.
                     if (!file_exists($img_src_avif)) {
                     $img = new Imagick();
                     $img->readImageBlob($file_temp);
                     $img->setImageFormat('avif');
-                    $img->setCompressionQuality(90);
+                    $img->setCompressionQuality(50);
+                    $img->scaleImage(100, 56, true);
                     if (!empty($orientation)) {
                         switch ($orientation) {
                             case imagick::ORIENTATION_BOTTOMRIGHT:
@@ -218,28 +218,28 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
                     $img->writeImage($img_src_avif);
                   }
                   //$img->clean();
-                  $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
+                  //$body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.avif',$body);
                   unset($file_temp);
+                  ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
+                } catch (Exception $e) {
+                    echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
+                }
               } else {
                 $savefile = fopen($img_src, "w");
                 fwrite($savefile, file_get_contents($img_url));
                 fclose($savefile);
                 $body = str_replace($img_url,'./img/'.$i.'.'.$img_url_format,$body); //str_replace damit später das Format von der Webseite übernommen wird, aber wegen angriffen muss man das erst filtern, also ersteinmal wieder unsauber.
               }
-                ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
-              } catch (Exception $e) {
-                  echo 'Datei weißt einen Fehler auf: ',  $e->getMessage(), "\n";
-              }
-            }
-          } else {
-            //if (!file_exists($pathtsitebugfix.$permlink.'/img/'.$i.'.webp')) {
-            if (!$compress !== false || "gif" == $img_url_format) {
-              $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.'.$img_url_format,$body);
-            } else {
-              $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
-            }
           }
-        }
+        } else {
+          //if (!file_exists($pathtsitebugfix.$permlink.'/img/'.$i.'.webp')) {
+          if (!$compress !== false || "gif" == $img_url_format) {
+            $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.'.$img_url_format,$body);
+          } else {
+            $body = str_replace($img_url,$pathtsitebugfix.$permlink.'/img/'.$i.'.webp',$body);
+          }
+      }
+    }
           return $body;
     } else {
       return $body;
@@ -320,10 +320,10 @@ function render_list ($jsond) {
               $img->readImageBlob($file_temp);
               ini_set("default_socket_timeout", 10); //Eigentlich 60 aber 10 Sekunden sollten genügen.
               //$img->scaleImage(568, 340, true); //Zu stark verpixelt bei der Index Seite.
-              $img->cropThumbnailImage($scaley, $scalex, true); //Ist sonst zu stark verpixelt bei der Index Seite.
+              $img->cropThumbnailImage(100, 56, true); //Ist sonst zu stark verpixelt bei der Index Seite.
               //$img->setImageCompression(Imagick::COMPRESSION_JPEG);
               $img->setImageFormat('avif');
-              $img->setCompressionQuality(90);
+              $img->setCompressionQuality(50);
               $img->stripImage();
               $img->writeImage($img_src_avif);
               //$img->clean();

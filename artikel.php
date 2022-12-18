@@ -10,6 +10,8 @@
 
   <?=$img_src_preview?>
 
+  <?=$img_src_preview_2?>
+
   <meta name="keywords" content="minecraft, rlcraft, gameserver, server, teamspeak, discord, meet, voiceserver, steem, <?=$keywords?> ">
 
   <meta name="author" content="Janis">
