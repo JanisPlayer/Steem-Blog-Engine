@@ -28,6 +28,7 @@ function render(string $pathtemplate, string $pathtsite, string $filename, array
     $data['img_src_preview_2'] = '<meta property="og:image" content="'.$domain_path.$data['permlink'].'/img/preview.webp'.'"/>';
   } else {
     $data['img_src_preview'] = '';
+    $data['img_src_preview_2'] = '';
   }
 
   //Wird noch wo anderes hingemacht.
@@ -131,11 +132,12 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
         $img_src = $img_src.$i.'.'.$img_url_format;
 
         echo " ". $img_src;
-          if (!file_exists($img_src) || $img_src_compress || !file_exists($img_src_avif)) {
+          if (!file_exists($img_src) || !file_exists($img_src_compress) || !file_exists($img_src_avif)) {
 
             $file_temp = file_get_contents($img_url);
 
-            if (!file_exists($img_src)) {
+            //($img_url_format_found != "webp") um ein Format zu prüfen, auszusortieren für die Speicherung in Original, nützlich für eine Speicherung aller Dateien als Original auf dem Webserver oder um Dateinen zu ersetzem mit einer WebServer eigenen Version als die nur im Blog verfügbar ist.
+            if ((!file_exists($img_src)) && ($compress == false)) {
             $savefile = fopen($img_src, "w");
             fwrite($savefile, $file_temp);
             fclose($savefile);
@@ -589,7 +591,6 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
           //$json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
           $cURLConnection = curl_init();
           curl_setopt($cURLConnection, CURLOPT_URL, 'https://sds.steemworld.org/posts_api/getPost/janisplayer/'.$permlink);
-          curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
           curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
           $json_getPost = curl_exec($cURLConnection);
           curl_close($cURLConnection);
