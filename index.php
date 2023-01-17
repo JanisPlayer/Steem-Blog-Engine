@@ -393,7 +393,13 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
     //if ((time() - $file["datum"] >= 300)  ) { //Sind die 5 Minuten abgelaufen?
       //Neue Datei erstellen
       echo "Neue Datei erstellen";
-      $json = file_get_contents("https://sds.steemworld.org/feeds_api/getPostsByAuthor/janisplayer");
+      //$json = file_get_contents("https://sds.steemworld.org/feeds_api/getPostsByAuthor/janisplayer");
+      $cURLConnection = curl_init();
+      curl_setopt($cURLConnection, CURLOPT_URL, 'https://sds.steemworld.org/feeds_api/getPostsByAuthor/janisplayer');
+      curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+      $json = curl_exec($cURLConnection);
+      curl_close($cURLConnection);
+
       $jsond = json_decode($json, true);
 
       $jsone =[
@@ -421,7 +427,12 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
   } else {
     //Datei erstellen
     echo "Datei erstellen";
-    $json = file_get_contents("https://sds.steemworld.org/feeds_api/getPostsByAuthor/janisplayer");
+    //$json = file_get_contents("https://sds.steemworld.org/feeds_api/getPostsByAuthor/janisplayer");
+    $cURLConnection = curl_init();
+    curl_setopt($cURLConnection, CURLOPT_URL, 'https://sds.steemworld.org/feeds_api/getPostsByAuthor/janisplayer');
+    curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+    $json = curl_exec($cURLConnection);
+    curl_close($cURLConnection);
     $jsond = json_decode($json, true);
 
     $jsone =[
@@ -575,7 +586,14 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $data['foldername'] = $permlink;
         $data['permlink'] = $permlink;
 
-          $json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
+          //$json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
+          $cURLConnection = curl_init();
+          curl_setopt($cURLConnection, CURLOPT_URL, 'https://sds.steemworld.org/posts_api/getPost/janisplayer/'.$permlink);
+          curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+          curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+          $json_getPost = curl_exec($cURLConnection);
+          curl_close($cURLConnection);
+
           $jsond_getPost = json_decode($json_getPost, true);
 
           $data['getPost'] = $jsond_getPost;
