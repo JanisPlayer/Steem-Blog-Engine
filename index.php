@@ -72,7 +72,6 @@ function escape(string $data){
     return htmlspecialchars($data,ENT_QUOTES,'UTF-8');
 }
 
-
 function file_check(string $filename, int $sec) {
   global $pathtemplate;
   if (file_exists($pathtemplate.$filename)) {  //Datei vorhanden?
@@ -375,13 +374,71 @@ function render_list ($jsond) {
       .'<description>'.$data['description'].'<description>'
       .'<button onclick="createArtikelContent_steamworld_api(' . "'" . $data['permlink'] . "'" . '); location.href=' . "'" . '#content_read' . "'" . ';">Beitrag lesen (Schnellansicht)</button>'
       ."<votes>Votes: up: ".$data['upvote_count'] ." down: ". +$data['downvote_count']."</votes>"
-      ."<datum>".$datum = date("d.m.Y H:i",$data['datum'])."</datum>"
+      ."<datum>".date("d.m.Y H:i",$data['datum'])."</datum>"
       ."</artikel>";
       $data['javascirpt'] = "//";
       $data['javascirpt_steemit'] = "//";
     }
     render($pathtsite.'artikellist.php', $pathtsite, "artikel.html", $renderdata);
     $modus =3;
+}
+
+function render_rss_feed($jsond) {
+  global $pathtsite;
+  global $pathtemplate;
+  global $domain_path;
+  $parsed_url = parse_url($domain_path);
+  $domain = $parsed_url['scheme'] . '://' . $parsed_url['host'];
+  $time = "-2 weeks";
+  $min_artikel = 10;
+
+  $lastartikelcreate = 0;
+  for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
+    $artikelcreate = read_api($i,"created", 0);
+    if ($lastartikelcreate < $artikelcreate) {
+      $lastartikelcreate = $artikelcreate;
+    }
+  }
+
+  if (file_exists($pathtemplate."rss_feed.rdf") || $lastartikelcreate <= filemtime($pathtemplate."rss_feed.rdf")) {
+    return;
+  }
+
+  $renderdata = "<?xml version='1.0' encoding='UTF-8'?>
+<rss version='2.0'>
+<channel>
+     <title>Helden des Bildschirms | Blog</title>
+     <link>" . $domain . "</link>
+     <description>Blog über Technik und alles Mögliche was mir einfällt.</description>
+     <lastBuildDate>" . date("D, d M Y H:i:s O", strtotime("now")) . "</lastBuildDate>
+     <language>de</language>";
+    for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
+      $data = gen_site_data(read_api($i,"permlink", 0));
+      if ($data['datum'] >= strtotime($time) || $i < $min_artikel) {
+        $renderdata = $renderdata
+        ."\n     <item>"
+        ."\n            <title>". $data['title'] . '</title>'
+        ."\n            <link>". $domain_path . $data['permlink'] . '</link>'
+        ."\n            <description>". str_replace(["\n", "\r", "  "], ' ', trim($data['description'])) . '</description>'
+        ;
+
+        $json_metadata = read_api($i,"json_metadata", 0);
+        $image = json_decode($json_metadata, true)["image"];
+        $img_url = $image[0];
+        if (isset($image) && isset($img_url)) {
+          $img_src = $domain_path.$data['permlink'].'/img/preview.webp';
+          $renderdata = $renderdata
+          ."\n            <image_link>".$img_src.'</image_link>';
+        }
+        $renderdata = $renderdata
+        ."\n            <pubDate>".date("D, d M Y H:i:s O", $data['datum'])."</pubDate>"
+        ."\n     </item>";
+      }
+    }
+    $renderdata = $renderdata
+    ."\n</channel>"
+    ."\n</rss>";
+    file_put_contents($pathtemplate."rss_feed.rdf", $renderdata);
 }
 
 function open_api_getPostsByAuthor () { //Die Funktion kann später falls benötigt auch die gesamte API öffnen.
@@ -414,6 +471,7 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
           //Kommt vielleicht auch noch wo anderes hin oder wird über eine andere Funktion aufgerufen, obwohl eher nicht.
           if ($modus == 3) {
               render_list($jsond);
+              render_rss_feed($jsond);
           }
 
       } else {
@@ -445,6 +503,7 @@ function open_api_getPostsByAuthor () { //Die Funktion kann später falls benöt
     file_put_contents($pathtemplate."PostsByAuthor.json",json_encode($jsone));
     if ($modus == 3) {
       render_list($jsond);
+      render_rss_feed($jsond);
       //Renderfunktion PHP Schnellansicht als JSON oder HTML zum laden über GET oder POST.
     }
   }
@@ -611,7 +670,6 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
   }
   return false;
 }
-
 
 function gen_site(string $permlink, bool $weiterleitung) { //Seite erstellen.
 global $pathtemplate;
