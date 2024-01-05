@@ -262,7 +262,7 @@ function render_list ($jsond) {
   $Parsedown->setMarkupEscaped(true);
   $renderdata['body_parsedown'] = "";
     for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
-      $data = gen_site_data(read_api($i,"permlink", 0));
+      $data = gen_site_data(read_api($i,"permlink", 0),true);
       $renderdata['body_parsedown'] = $renderdata['body_parsedown']
       ."<artikel>"
       //.'<a href="?artikel='. $data['permlink'] . '"><imgcontainer style="width: 100%; height: 180px; overflow: hidden; display: inline-block; position: relative;"><picture>'
@@ -413,25 +413,25 @@ function render_rss_feed($jsond) {
      <lastBuildDate>" . date("D, d M Y H:i:s O", strtotime("now")) . "</lastBuildDate>
      <language>de</language>";
     for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
-      $data = gen_site_data(read_api($i,"permlink", 0));
-      if ($data['datum'] >= strtotime($time) || $i < $min_artikel) {
+      //$data = gen_site_data(read_api($i,"permlink", 0),true);
+      if (read_api($i,"created", 0) >= strtotime($time) || $i < $min_artikel) {
         $renderdata = $renderdata
         ."\n     <item>"
-        ."\n            <title>". $data['title'] . '</title>'
-        ."\n            <link>". $domain_path . $data['permlink'] . '</link>'
-        ."\n            <description>". str_replace(["\n", "\r", "  "], ' ', trim($data['description'])) . '</description>'
+        ."\n            <title>". read_api($i,"title", 1) . '</title>'
+        ."\n            <link>". $domain_path . read_api($i,"permlink", 0) . '</link>'
+        ."\n            <description>". str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(read_api($i,"body", 0)))) . '</description>'
         ;
 
         $json_metadata = read_api($i,"json_metadata", 0);
         $image = json_decode($json_metadata, true)["image"];
         $img_url = $image[0];
         if (isset($image) && isset($img_url)) {
-          $img_src = $domain_path.$data['permlink'].'/img/preview.webp';
+          $img_src = $domain_path.read_api($i,"permlink", 0).'/img/preview.webp';
           $renderdata = $renderdata
           ."\n            <image_link>".$img_src.'</image_link>';
         }
         $renderdata = $renderdata
-        ."\n            <pubDate>".date("D, d M Y H:i:s O", $data['datum'])."</pubDate>"
+        ."\n            <pubDate>".date("D, d M Y H:i:s O", read_api($i,"created", 0))."</pubDate>"
         ."\n     </item>";
       }
     }
@@ -629,8 +629,9 @@ function remove_makedown(string $text)
   return htmlspecialchars($text);
 }
 
-function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
-//global $jsond; //global
+function gen_site_data(string $permlink, bool $read_local) {  //Gibt es diesen Beitrag im Blog?
+  global $pathtemplate;
+  global $pathtsite;
   $jsond = open_api_getPostsByAuthor();
   for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
     if (read_api($i,"permlink", 0) == $permlink) {
@@ -648,19 +649,23 @@ function gen_site_data(string $permlink) {  //Gibt es diesen Beitrag im Blog?
         $data['permlink'] = $permlink;
 
           //$json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
-          $cURLConnection = curl_init();
-          curl_setopt($cURLConnection, CURLOPT_URL, 'https://sds.steemworld.org/posts_api/getPost/janisplayer/'.$permlink);
-          curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
-          $json_getPost = curl_exec($cURLConnection);
-          curl_close($cURLConnection);
-
-          $jsond_getPost = json_decode($json_getPost, true);
+          if ($read_local == false || !file_exists($pathtemplate."index_".$permlink.".json")) {
+            $cURLConnection = curl_init();
+            curl_setopt($cURLConnection, CURLOPT_URL, 'https://sds.steemworld.org/posts_api/getPost/janisplayer/'.$permlink);
+            curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+            $json_getPost = curl_exec($cURLConnection);
+            curl_close($cURLConnection);
+            $jsond_getPost = json_decode($json_getPost, true);
+          } else {
+            $file = json_decode(file_get_contents($pathtemplate."index_".$permlink.".json"), true);
+            $jsond_getPost = $file["getPost"];
+          }
 
           $data['getPost'] = $jsond_getPost;
 
           $data['body'] = $jsond_getPost["result"]["body"];
           $data['body']  = render_content_images($data['body'], $jsond_getPost["result"]["json_metadata"], $permlink, true);
-
+          //$data['description'] = substr(remove_makedown($data['body']),0,200); //Eine Idee für bessere Beschreibungen, die entweder mit ... oder nach einem Satz zeichen gekürtzt werden bis zu einer minimalen Zeichen anzahl von 150 Zeichen, wenn das nicht geht soll "..." dahinter stehen.
           $data['last_update'] = $jsond_getPost["result"]["last_update"];
 
         //return $permlink;
@@ -684,7 +689,7 @@ global $pathtsite;
       if (file_check("index_".$permlink.".json", 3600)) { //Wenn 1 Stunde vergangen sind, die Datei exisistiert wird diese neu erstellt oder später auf neustellung geprüft.
 
         $savejson = false;
-        $data = gen_site_data($permlink);
+        $data = gen_site_data($permlink,false);
         if (file_exists($pathtemplate."index_".$permlink.".json")) {  //Datei vorhanden?
           $file = json_decode(file_get_contents($pathtemplate."index_".$permlink.".json"), true);
 
@@ -721,7 +726,7 @@ global $pathtsite;
   $data;
   // if (($exist_site_bool == false) && (gen_site_bool == false)) {
   if ($exist_site_bool == false) {
-    $gen_site_bool = gen_site_data($permlink);
+    $gen_site_bool = gen_site_data($permlink,false);
     $data = $gen_site_bool;
     /*if ($gen_site_bool != false) { Ist eh Blödsinn-
         $permlink = $gen_site_bool;
