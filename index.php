@@ -689,19 +689,15 @@ global $pathtsite;
       if (file_check("index_".$permlink.".json", 3600)) { //Wenn 1 Stunde vergangen sind, die Datei exisistiert wird diese neu erstellt oder später auf neustellung geprüft.
 
         $savejson = false;
-        $data = gen_site_data($permlink,false);
+        $data = gen_site_data($permlink,true);
         if (file_exists($pathtemplate."index_".$permlink.".json")) {  //Datei vorhanden?
           $file = json_decode(file_get_contents($pathtemplate."index_".$permlink.".json"), true);
 
-          if ($file["permlink"] != $data["permlink"]) { //Sind die Daten noch aktuell? So ist das ganze schonender für die SSD braucht aber mehr leistung, vielleicht ist ein kompletter Abgleich auch besser.
-            $savejson = ture;
-          } elseif ($file["last_update"] != $data["last_update"]) {
+          if ($file["last_update"] != $data["last_update"]) { //Sind die Daten noch aktuell? So ist das ganze schonender für die SSD braucht aber mehr leistung, vielleicht ist ein kompletter Abgleich auch besser.
             $savejson = true;
           } elseif ($file["upvote_count"] != $data["upvote_count"]) {
             $savejson = true;
           } elseif ($file["downvote_count"] != $data["downvote_count"]) {
-            $savejson = true;
-          } elseif ($file["body"] != $data["body"]) {
             $savejson = true;
           }
         } else {
@@ -709,6 +705,7 @@ global $pathtsite;
         }
 
         if ($savejson == true) {
+          $data = gen_site_data($permlink,false);
           file_put_contents($pathtemplate."index_".$permlink.".json",json_encode($data)); //Möglicherweise Probleme bei anderen Überschriften.
           global $modus; //Ja okay ich schreibe das vielleicht noch um, ist dann halt größer aber sauberer und übersichtlicher und schneller beim ausführen.
           if ($modus == 3) { //Damit im PHP Modus die Seite auch neu erstellt wird.
