@@ -8,14 +8,16 @@ PHP only Modus, die Seiten werden zum Großteil nur mit PHP erstellt.
 * Bugs: IMG Verzeichnis ist noch nicht an die URL oder Indexseite angepasst, wodurch die Bilder in der Schnellansicht nicht laden.
 
 Was fehlt 
-* Ein möglicher Temp-Speicher der Bilder, wenn das Urheberrecht es zuslässt die Bilder auf dem Server zu speichern.(Erledigt Naja)  -Vorschaubilder  -Artikel Bilder können auf dem Server gespeichert werden mit und ohne Kompression in einem img Ordner.
-* PHP only Modus mit https://parsedown.org/ . (Erledigt Naja)  
+* Die Performance muss optimiert werden. Überall, wo zum Beispiel `$data = gen_site_data($permlink, false);` auf false steht, wie beispielsweise in der gen_site Funktion, könnte man direkt `read_api` nutzen, um ein bisschen Zeit zu sparen. Die gen_site_data Funktion wurde etwas verbessert, mit einem lokalen Lese-Modus, um schnell die Performance zu verbessern, ohne alle Funktionen, die es nutzen, aufwendig umzuschreiben.
+* Eine Möglichkeit, Sitemaps mit Priorität nach Erstelldatum zu erstellen.
 * HTML: Vote-Funktion, Design, Darstellung von Bildern bei manchen Posts(Bug).  
 * PHP only Modus Seitenabschnitte generieren, die dann einfach aneinander geheftet werden und das passiert, wenn der nutzer am ende der Seite angelangt ist.  Für den Javasciprt Modus ist das natürlich dann auch benötigt.
 * PHP only Modus Schnellansicht über Get.
-* PHP loader PHP die die HTML auf Aktualität prüft oder über Javascript Post.
+* PHP loader PHP die die HTML auf Aktualität prüft oder über Javascript Post. Ein CronJob wäre hier die bessere Lösung, je nach Nutzerzahlen.
 
 Erledigt:
+* Ein möglicher Temp-Speicher der Bilder, wenn das Urheberrecht es zuslässt die Bilder auf dem Server zu speichern.(Erledigt Naja)  -Vorschaubilder  -Artikel Bilder können auf dem Server gespeichert werden mit und ohne Kompression in einem img Ordner.
+* PHP only Modus mit https://parsedown.org/ . (Erledigt Naja)  
 * Ein Docker Script, welches es ermöglicht die Engine leicht zu eigenen Webseite hinzuzufügen. (Erledigt)  
 * Es solle eigentlich nur noch ein Username oder Community-Name eingeben werden in den Docker File. (Erledigt)  
 * Minimum Zeit für die Aktrealitätsprüfung, welche ja bei 5 Minuten liegen sollte und wahrscheinlich nutze ich dafür auch die Datei. (Erledigt)  
