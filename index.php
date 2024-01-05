@@ -647,6 +647,7 @@ function gen_site_data(string $permlink, bool $read_local) {  //Gibt es diesen B
         $data['author'] = read_api($i,"author", 1);
         $data['foldername'] = $permlink;
         $data['permlink'] = $permlink;
+        $data['last_update'] = read_api($i,"last_update", 0);
 
           //$json_getPost = file_get_contents("https://sds.steemworld.org/posts_api/getPost/janisplayer/".$permlink);
           if ($read_local == false || !file_exists($pathtemplate."index_".$permlink.".json")) {
@@ -666,7 +667,7 @@ function gen_site_data(string $permlink, bool $read_local) {  //Gibt es diesen B
           $data['body'] = $jsond_getPost["result"]["body"];
           $data['body']  = render_content_images($data['body'], $jsond_getPost["result"]["json_metadata"], $permlink, true);
           //$data['description'] = substr(remove_makedown($data['body']),0,200); //Eine Idee für bessere Beschreibungen, die entweder mit ... oder nach einem Satz zeichen gekürtzt werden bis zu einer minimalen Zeichen anzahl von 150 Zeichen, wenn das nicht geht soll "..." dahinter stehen.
-          $data['last_update'] = $jsond_getPost["result"]["last_update"];
+          //$data['last_update'] = $jsond_getPost["result"]["last_update"];
 
         //return $permlink;
         return $data;
