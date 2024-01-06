@@ -383,62 +383,80 @@ function render_list ($jsond) {
     $modus =3;
 }
 
+class SimpleXMLExtended extends SimpleXMLElement {
+  public function addCData($cdata_text) {
+    $node= dom_import_simplexml($this);
+    $no = $node->ownerDocument;
+    $node->appendChild($no->createCDATASection($cdata_text));
+  }
+}
+
 function render_rss_feed($jsond) {
-  global $pathtsite;
-  global $pathtemplate;
-  global $domain_path;
-  $parsed_url = parse_url($domain_path);
-  $domain = $parsed_url['scheme'] . '://' . $parsed_url['host'];
-  $time = "-2 weeks";
-  $min_artikel = 10;
+    global $pathtsite, $pathtemplate, $domain_path;
 
-  $lastartikelcreate = 0;
-  for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
-    $artikelcreate = read_api($i,"created", 0);
-    if ($lastartikelcreate < $artikelcreate) {
-      $lastartikelcreate = $artikelcreate;
-    }
-  }
+    $parsed_url = parse_url($domain_path);
+    $domain = $parsed_url['scheme'] . '://' . $parsed_url['host'];
+    $time = "-2 weeks";
+    $min_artikel = 10;
 
-  if (file_exists($pathtemplate."rss_feed.rdf") || $lastartikelcreate <= filemtime($pathtemplate."rss_feed.rdf")) {
-    return;
-  }
+    $lastartikelcreate = 0;
 
-  $renderdata = "<?xml version='1.0' encoding='UTF-8'?>
-<rss version='2.0'>
-<channel>
-     <title>Helden des Bildschirms | Blog</title>
-     <link>" . $domain . "</link>
-     <description>Blog über Technik und alles Mögliche was mir einfällt.</description>
-     <lastBuildDate>" . date("D, d M Y H:i:s O", strtotime("now")) . "</lastBuildDate>
-     <language>de</language>";
     for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
-      //$data = gen_site_data(read_api($i,"permlink", 0),true);
-      if (read_api($i,"created", 0) >= strtotime($time) || $i < $min_artikel) {
-        $renderdata = $renderdata
-        ."\n     <item>"
-        ."\n            <title>". read_api($i,"title", 1) . '</title>'
-        ."\n            <link>". $domain_path . read_api($i,"permlink", 0) . '</link>'
-        ."\n            <description>". str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(read_api($i,"body", 0)))) . '</description>'
-        ;
+        $artikelcreate = read_api($i, "created", 0);
 
-        $json_metadata = read_api($i,"json_metadata", 0);
-        $image = json_decode($json_metadata, true)["image"];
-        $img_url = $image[0];
-        if (isset($image) && isset($img_url)) {
-          $img_src = $domain_path.read_api($i,"permlink", 0).'/img/preview.webp';
-          $renderdata = $renderdata
-          ."\n            <image_link>".$img_src.'</image_link>';
+        if ($lastartikelcreate < $artikelcreate) {
+            $lastartikelcreate = $artikelcreate;
         }
-        $renderdata = $renderdata
-        ."\n            <pubDate>".date("D, d M Y H:i:s O", read_api($i,"created", 0))."</pubDate>"
-        ."\n     </item>";
-      }
     }
-    $renderdata = $renderdata
-    ."\n</channel>"
-    ."\n</rss>";
-    file_put_contents($pathtemplate."rss_feed.rdf", $renderdata);
+
+    $rssFilePath = $pathtemplate . "rss_feed.rdf";
+
+    if (file_exists($rssFilePath) || $lastartikelcreate <= filemtime($rssFilePath)) {
+        return;
+    }
+
+    $rssFeed = new SimpleXMLExtended('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"></rss>');
+    $channel = $rssFeed->addChild('channel');
+    $channel->addChild('title', 'Helden des Bildschirms | Blog');
+    $channel->addChild('link', $domain);
+    $channel->addChild('description', 'Blog über Technik und alles Mögliche was mir einfällt');
+    $channel->addChild('lastBuildDate', date("D, d M Y H:i:s O", strtotime("now")));
+    $channel->addChild('language', 'de');
+
+    for ($i=0; $i < count($jsond["result"]["rows"]); $i++) {
+        $createdTimestamp = read_api($i, "created", 0);
+
+        if ($createdTimestamp >= strtotime($time) || $i < $min_artikel) {
+            $item = $channel->addChild('item');
+            $item->addChild('title', read_api($i, "title", 1));
+            $item->addChild('link', $domain_path . read_api($i, "permlink", 0));
+            $item->addChild('description', str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(read_api($i, "body", 0)))));
+
+            $json_metadata = read_api($i, "json_metadata", 0);
+            $image = json_decode($json_metadata, true)["image"];
+            $img_url = $image[0];
+
+            if (isset($image) && isset($img_url)) {
+                $img_src = $domain_path . read_api($i, "permlink", 0) . '/img/preview.webp';
+                $item->addChild('image_link', $img_src);
+                $cdata = $item->addChild('encoded', '', 'http://purl.org/rss/1.0/modules/content/');
+                $cdata[0]->addCData('<img src="'.$img_src.'" alt="preview image">');
+            }
+
+            $item->addChild('pubDate', date("D, d M Y H:i:s O", $createdTimestamp));
+        }
+    }
+
+    $xmlrssFeed= $rssFeed->asXML();
+    
+    $dom = new DOMDocument();
+    $dom->loadXML($xmlrssFeed);
+    $dom->formatOutput = true;
+    $formattedXML = $dom->saveXML();
+
+    $fp = fopen($rssFilePath,'w+');
+    fwrite($fp, $formattedXML);
+    fclose($fp);
 }
 
 function open_api_getPostsByAuthor () { //Die Funktion kann später falls benötigt auch die gesamte API öffnen.
