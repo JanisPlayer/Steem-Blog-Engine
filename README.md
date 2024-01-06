@@ -10,6 +10,7 @@ PHP only Modus, die Seiten werden zum Großteil nur mit PHP erstellt.
 Was fehlt 
 * Die Performance muss optimiert werden. Überall, wo zum Beispiel `$data = gen_site_data($permlink, false);` auf false steht, wie beispielsweise in der gen_site Funktion, könnte man direkt `read_api` nutzen, um ein bisschen Zeit zu sparen. Die gen_site_data Funktion wurde etwas verbessert, mit einem lokalen Lese-Modus, um schnell die Performance zu verbessern, ohne alle Funktionen, die es nutzen, aufwendig umzuschreiben.
 * Eine Möglichkeit, Sitemaps mit Priorität nach Erstelldatum zu erstellen.
+* Eine Möglichkeit RSS Feeds nach Tags zu erstellen.
 * HTML: Vote-Funktion, Design, Darstellung von Bildern bei manchen Posts(Bug).  
 * PHP only Modus Seitenabschnitte generieren, die dann einfach aneinander geheftet werden und das passiert, wenn der nutzer am ende der Seite angelangt ist.  Für den Javasciprt Modus ist das natürlich dann auch benötigt.
 * PHP only Modus Schnellansicht über Get.
