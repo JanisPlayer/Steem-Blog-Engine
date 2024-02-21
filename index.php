@@ -429,8 +429,8 @@ function render_rss_feed($jsond) {
         if ($createdTimestamp >= strtotime($time) || $i < $min_artikel) {
             $item = $channel->addChild('item');
             $item->addChild('title', read_api($i, "title", 1));
-            $item->addChild('link', $domain_path . read_api($i, "permlink", 0));
-            $item->addChild('description', str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(read_api($i, "body", 0)))));
+            $item->addChild('link', $domain_path . read_api($i, "permlink", 0) . "/");
+            $item->addChild('description', str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(read_api($i, "body", 1)))));
 
             $json_metadata = read_api($i, "json_metadata", 0);
             $image = json_decode($json_metadata, true)["image"];
@@ -438,12 +438,13 @@ function render_rss_feed($jsond) {
 
             if (isset($image) && isset($img_url)) {
                 $img_src = $domain_path . read_api($i, "permlink", 0) . '/img/preview.webp';
-                $item->addChild('image_link', $img_src);
+                //$item->addChild('image_link', $img_src);
                 $cdata = $item->addChild('encoded', '', 'http://purl.org/rss/1.0/modules/content/');
                 $cdata[0]->addCData('<img src="'.$img_src.'" alt="preview image">');
             }
 
             $item->addChild('pubDate', date("D, d M Y H:i:s O", $createdTimestamp));
+            $item->addChild('guid', $domain_path . read_api($i, "permlink", 0) . "/");
         }
     }
 
