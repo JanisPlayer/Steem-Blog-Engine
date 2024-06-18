@@ -247,7 +247,7 @@ function render_content_images(string $body, $json_metadata, string $permlink, $
    }
 }
 
-function render_list ($jsond) {
+function render_list($jsond) {
   global $pathtsite;
 
   global $modus; //Ja ich weiß das geht auch schöner.
@@ -430,7 +430,8 @@ function render_rss_feed($jsond) {
             $item = $channel->addChild('item');
             $item->addChild('title', read_api($i, "title", 1));
             $item->addChild('link', $domain_path . read_api($i, "permlink", 0) . "/");
-            $item->addChild('description', str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(read_api($i, "body", 1)))));
+            //$item->addChild('description', str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(read_api($i, "body", 1)))));
+            $item->addChild('description', str_replace(["\n", "\r", "  "], ' ', trim(remove_makedown(gen_site_data(read_api($i,"permlink", 0),true)['description']))));
 
             $json_metadata = read_api($i, "json_metadata", 0);
             $image = json_decode($json_metadata, true)["image"];
@@ -449,7 +450,7 @@ function render_rss_feed($jsond) {
     }
 
     $xmlrssFeed= $rssFeed->asXML();
-    
+
     $dom = new DOMDocument();
     $dom->loadXML($xmlrssFeed);
     $dom->formatOutput = true;
@@ -570,6 +571,27 @@ function strposa($haystack, $needles=array(), $offset=0) { //https://stackoverfl
 
 function remove_makedown(string $text)
 {
+  // Remove Markdown headers, lists, and code blocks, excluding ###
+  $patterns = array(
+      '/^(?!###\s).+#\s/m', // Headers except ###
+      '/^\s*[*+-]\s+/m',    // Lists
+      '/`/',                // Inline code
+      '/>\s*/',             // Blockquotes
+      '/---/',              // Horizontal rules
+      '/==+/'               // Setext-style headers
+  );
+  $text = preg_replace($patterns, '', $text);
+
+  // Remove Markdown links and images
+  $text = preg_replace('/!\[.*?\]\(.*?\)/', '', $text); // Images
+  $text = preg_replace('/\[(.*?)\]\(.*?\)/', '$1', $text); // Links (keep the link text)
+
+  // Remove HTML tags
+  $text = strip_tags($text);
+
+  // Replace multiple spaces with a single space
+  $text = trim(preg_replace('/\s+/', ' ', $text));
+
   //HTML Makedown Filter
   $text = str_replace(array("####### ", "###### ", "#### ", "### ", "## ", "# ","---","* ", "+ ", "- ", "= " , "`", "> "), "", $text);
 
@@ -657,7 +679,7 @@ function gen_site_data(string $permlink, bool $read_local) {  //Gibt es diesen B
         $permlink = read_api($i,"permlink", 0);
         $data['title'] = read_api($i,"title", 1);
         //Muss verbessert werden.
-        $data['description'] = remove_makedown(read_api($i,"body", 0));
+        //$data['description'] = remove_makedown(read_api($i,"body", 0));
         $data['keywords'] = implode(", ", json_decode(read_api($i,"json_metadata", 0), true)["tags"]);
         $data['upvote_count'] = read_api($i,"upvote_count", 0);
         $data['downvote_count'] = read_api($i,"downvote_count", 0);
@@ -685,7 +707,7 @@ function gen_site_data(string $permlink, bool $read_local) {  //Gibt es diesen B
 
           $data['body'] = $jsond_getPost["result"]["body"];
           $data['body']  = render_content_images($data['body'], $jsond_getPost["result"]["json_metadata"], $permlink, true);
-          //$data['description'] = substr(remove_makedown($data['body']),0,200); //Eine Idee für bessere Beschreibungen, die entweder mit ... oder nach einem Satz zeichen gekürtzt werden bis zu einer minimalen Zeichen anzahl von 150 Zeichen, wenn das nicht geht soll "..." dahinter stehen.
+          $data['description'] = substr(remove_makedown($data['body']),0,200); //Eine Idee für bessere Beschreibungen, die entweder mit ... oder nach einem Satz zeichen gekürtzt werden bis zu einer minimalen Zeichen anzahl von 150 Zeichen, wenn das nicht geht soll "..." dahinter stehen.
           //$data['last_update'] = $jsond_getPost["result"]["last_update"];
 
         //return $permlink;
@@ -809,6 +831,10 @@ $modus = 3; //select 1 Javascirpt_Steem / 2 Javascript PHP / 3 PHP Only
 }*/
 
 //Für die Hauptseite eine Möglichkeit alle Artikel zu überprüfen.
+
+ // $testss = json_decode(file_get_contents($pathtemplate."PostsByAuthor.json"), true);
+ // $jsondss = json_decode($testss['inhalt'], true);
+ // render_rss_feed($jsondss);
 
 ob_start(); //Debug
 
