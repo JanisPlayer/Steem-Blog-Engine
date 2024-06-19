@@ -29,6 +29,7 @@ sed -i "s/janisplayer/$name/g" ./index.php
 sed -i "s/modus = 4;/modus = $modus;/g" ./index.php
 
 sed -i "s/janisplayer/$name/g" ./artikel.html
+sed -i "s/janisplayer/$name/g" ./artikellist.php
 sed -i "s/janisplayer/$name/g" ./templates/artikel.php
 
 # Setze die Berechtigungen
