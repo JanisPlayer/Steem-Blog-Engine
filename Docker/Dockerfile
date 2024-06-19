@@ -1,26 +1,21 @@
-FROM debian:bullseye-slim
+FROM php:8.2-apache
 
-USER root
+# Install necessary packages and PHP extensions
+RUN apt-get update && apt-get install -y \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libxpm-dev \
+    libmagickwand-dev \
+    --no-install-recommends && rm -r /var/lib/apt/lists/* \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-xpm \
+    && docker-php-ext-install -j$(nproc) gd \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick
 
-# Debian aktualisieren und notwendige Pakete installieren
-RUN apt-get update -qq \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y git \
-    mariadb-client wget curl \
-    ca-certificates lsb-release apt-transport-https gnupg bsdmainutils software-properties-common
+# Set the max_execution_time
+RUN echo "max_execution_time = 3600" > /usr/local/etc/php/conf.d/max_execution_time.ini
 
-# PHP-Repository hinzufügen
-RUN echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list \
-    && curl -fsSL https://packages.sury.org/php/apt.gpg | apt-key add - \
-    && apt-get update -qq
-
-# PHP 8.0 und notwendige Erweiterungen installieren
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y php8.0 php8.0-common php8.0-cli php8.0-fpm \
-    php8.0-mysql php8.0-curl php8.0-xml php8.0-mbstring \
-    php8.0-intl php8.0-redis php8.0-zip php8.0-sqlite3 \
-    php-imagick
-
-# Standardverzeichnis festlegen
-WORKDIR /var/app
-
-# Den Prozess ausführen, den dieser Container bereitstellen wird
-CMD tail -f /dev/null
+# Set the working directory
+WORKDIR /var/www/html
