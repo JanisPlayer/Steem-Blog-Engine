@@ -26,7 +26,7 @@ cp index.css ./templates/index.css
 
 # Ersetze Platzhalter in den Dateien
 sed -i "s/janisplayer/$name/g" ./index.php
-sed -i "s/modus = 4;/modus = $modus;/g" ./index.php
+sed -i "/\$modus = 3; \/\/select 1 Javascirpt_Steem \/ 2 Javascript PHP \/ 3 PHP Only/c\$modus = $modus; \/\/select 1 Javascirpt_Steem \/ 2 Javascript PHP \/ 3 PHP Only" ./index.php
 
 sed -i "s/janisplayer/$name/g" ./artikel.html
 sed -i "s/janisplayer/$name/g" ./artikellist.php
